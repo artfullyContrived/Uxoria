@@ -1,0 +1,127 @@
+Found a 25 line (93 tokens) duplication in the following files: 
+Starting at line 126 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+Starting at line 104 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/PlayPad.java
+
+			cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+			encrypted = cipher.doFinal(decrypted.getBytes());
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e, e);
+		} catch (NoSuchPaddingException e) {
+			logger.error(e, e);
+		} catch (InvalidKeyException e) {
+			logger.error(e, e);
+		} catch (IllegalBlockSizeException e) {
+			logger.error(e, e);
+		} catch (BadPaddingException e) {
+			logger.error(e, e);
+		}
+
+		return encrypted;
+
+	}
+
+	/**
+	 * AES decrypt.
+	 *
+	 * @param encrypted the encrypted
+	 * @return the byte[]
+	 */
+	public byte[] AESDecrypt(byte[] encrypted) {
+=====================================================================
+Found a 16 line (88 tokens) duplication in the following files: 
+Starting at line 156 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+Starting at line 133 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/PlayPad.java
+
+			cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+			original = cipher.doFinal(encrypted);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e, e);
+		} catch (NoSuchPaddingException e) {
+			logger.error(e, e);
+		} catch (InvalidKeyException e) {
+			logger.error(e, e);
+		} catch (IllegalBlockSizeException e) {
+			logger.error(e, e);
+		} catch (BadPaddingException e) {
+			logger.error(e, e);
+		}
+
+		return original;
+	}
+=====================================================================
+Found a 14 line (78 tokens) duplication in the following files: 
+Starting at line 127 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+Starting at line 157 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+
+	    original = cipher.doFinal(encrypted);
+	} catch (NoSuchAlgorithmException e) {
+	    logger.error(e, e);
+	} catch (NoSuchPaddingException e) {
+	    logger.error(e, e);
+	} catch (InvalidKeyException e) {
+	    logger.error(e, e);
+	} catch (IllegalBlockSizeException e) {
+	    logger.error(e, e);
+	} catch (BadPaddingException e) {
+	    logger.error(e, e);
+	}
+
+	return original;
+=====================================================================
+Found a 8 line (41 tokens) duplication in the following files: 
+Starting at line 59 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/smpp/common/SMPPSessionBinder.java
+Starting at line 71 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/smpp/common/SMPPSessionBinder.java
+
+    public SMPPSessionBinder(SMPPBean smppBean) {
+	super(
+		StopStrategies.stopAfterAttempt(20),
+		WaitStrategies
+			.incrementingWait(5, TimeUnit.SECONDS, 5,
+				TimeUnit.SECONDS),
+		new ExceptionClassPredicate<SMPPSession>(ConnectException.class));
+	this.smpp = smppBean;
+=====================================================================
+Found a 7 line (40 tokens) duplication in the following files: 
+Starting at line 187 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+Starting at line 48 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/PlayPad.java
+
+			kgen.init(128);
+			skey = kgen.generateKey();
+			raw = skey.getEncoded();
+			skeySpec = new SecretKeySpec(raw, "AES");
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e, e);
+		}
+=====================================================================
+Found a 6 line (37 tokens) duplication in the following files: 
+Starting at line 151 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+Starting at line 128 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/PlayPad.java
+
+	public byte[] AESDecrypt(byte[] encrypted) {
+		Cipher cipher;
+		byte[] original = null;
+		try {
+			cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+=====================================================================
+Found a 5 line (35 tokens) duplication in the following files: 
+Starting at line 100 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/smpp/receiver/MainReceiver.java
+Starting at line 61 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/smpp/common/SMPPSessionBinder.java
+
+		StopStrategies.stopAfterAttempt(20),
+		WaitStrategies
+			.incrementingWait(5, TimeUnit.SECONDS, 5,
+				TimeUnit.SECONDS),
+		new ExceptionClassPredicate<SMPPSession>(ConnectException.class));
+=====================================================================
+Found a 7 line (35 tokens) duplication in the following files: 
+Starting at line 120 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/UxoriaUtils.java
+Starting at line 98 of /home/anthony/Dropbox/workspace/Uxoria/src/com/artfully/contrived/util/PlayPad.java
+
+	public byte[] AESEncrypt(String decrypted) {
+
+		Cipher cipher;
+		byte[] encrypted = null;
+		try {
+			cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.ENCRYPT_MODE, skeySpec);

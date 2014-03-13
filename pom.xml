@@ -1,0 +1,132 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.artfully.contrived.smpp</groupId>
+  <artifactId>Uxoria</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.mainClass>com.artfully.contrived.smpp.receiver.MainReceiver</project.build.mainClass>
+      
+  </properties>
+  
+  <developers>
+    <developer>
+      <id>artfullyContrived</id>
+      <name>Anthony Musyoki</name>
+      <email>anthony.musyoki@gmail.com</email>
+      <organization>Inmobia</organization>
+      <organizationUrl>http://m.inmobia.com</organizationUrl>
+      <roles>
+        <role>owner</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-3</timezone>
+    </developer>
+  </developers>
+  <dependencies>
+          <dependency>
+	<groupId>log4j</groupId>
+	<artifactId>log4j</artifactId>
+	<version>1.2.14</version>
+</dependency> 
+ <dependency>           
+    <groupId>com.google.guava</groupId>
+    <artifactId>guava</artifactId>
+    <version>13.0.1</version>
+</dependency>
+<dependency>
+	<groupId>com.googlecode.jsmpp</groupId>
+	<artifactId>jsmpp</artifactId>
+	<version>2.1.0-RELEASE</version>
+</dependency>
+            
+            <dependency>
+	<groupId>commons-dbutils</groupId>
+	<artifactId>commons-dbutils</artifactId>
+	<version>1.5</version>
+</dependency>
+ <dependency>
+	<groupId>commons-lang</groupId>
+	<artifactId>commons-lang</artifactId>
+	<version>2.3</version>
+</dependency>
+            <dependency>
+	<groupId>com.googlecode.libphonenumber</groupId>
+	<artifactId>libphonenumber</artifactId>
+	<version>5.0</version>
+</dependency>
+<dependency>
+    <groupId>com.inmobia.util</groupId>
+     <artifactId>viper</artifactId>
+     <version>1.0.0</version>     
+</dependency>       
+<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+	<version>5.1.21</version>
+</dependency>
+       <dependency>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-api</artifactId>
+	<version>1.6.6</version>
+</dependency>
+            <dependency>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-log4j12</artifactId>
+	<version>1.6.6</version>
+</dependency>
+            <dependency>
+  <groupId>com.google.inject</groupId>
+  <artifactId>guice</artifactId>
+  <version>2.0</version>
+</dependency>
+            
+                 
+          </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>      
+      <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>exec-maven-plugin</artifactId>
+    <configuration>
+      <mainClass>${project.build.mainClass}</mainClass>
+    </configuration>
+   </plugin>
+   </plugins>
+    </build>
+    <reporting>
+    <plugins>
+          <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>2.5.2</version>
+        <configuration>
+          <!-- Optional directory to put findbugs xml report -->
+        </configuration>
+      </plugin>
+      
+      <plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-jar-plugin</artifactId>
+<configuration>
+<archive>
+<manifest>
+<mainClass>${project.build.mainClass}</mainClass>
+</manifest>
+</archive>
+</configuration>
+</plugin>
+    </plugins>
+  </reporting>    
+</project>
+
+
