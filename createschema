@@ -1,0 +1,60 @@
+TODO 
+	1. change bindtype to enum
+	2. change status to enum.
+
+CREATE DATABASE `uxoria` CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL ON `uxoria`.* TO `root`@localhost IDENTIFIED BY '';
+FLUSH PRIVILEGES;
+
+
+CREATE TABLE `SMPP` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`SMPPServerIP` varchar(80) DEFAULT NULL,
+`SMPPServerPort` int DEFAULT NULL,
+`shortCode` int DEFAULT NULL,
+`bindType` varchar(8) DEFAULT 'BIND_RX',
+`systemType` varchar(10) DEFAULT NULL,
+`systemID` varchar(10) DEFAULT NULL,
+`password` varchar(10) DEFAULT NULL,
+`NPI` tinyint(4) DEFAULT 0,
+`TON` tinyint(4) DEFAULT 0,
+`dataEncoding` tinyint(4) DEFAULT 0,
+`enquireLinkTimer` int(11) DEFAULT 1,
+`tps` INT DEFAULT 100,		
+`isShuttingDown` tinyint(1) DEFAULT 0,		
+`IsEnabled` tinyint(1) DEFAULT 1,
+`status` varchar(12) DEFAULT 'UNBOUND_TRX',
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=UTF8;
+
+
+
+
+insert into SMPP values(null, '127.0.0.1', 2121, 555, 'BIND_TX', 'SMPP', 'test', 'test123', 1,1,0,1,100,0,1,'UNBOUND_TRX');
+
+
+ CREATE TABLE `MessageQueue` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `smppId` int(11) DEFAULT '0',
+  `recipient` varchar(14) NOT NULL,
+  `priority` tinyint(4) DEFAULT '0',
+  `message` varchar(1000) DEFAULT '',
+  `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+insert into MessageQueue values(null, 1, '254736218228', 0,'Hi.', now());
+
+ CREATE TABLE `MessageLog` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `smppId` int(11) DEFAULT '0',
+  `type` varchar(11) DEFAULT '0',
+  `message` varchar(1000) DEFAULT '',
+ `recipient` varchar(14) NOT NULL,
+  `requestConfirmation` boolean DEFAULT false,
+  `timestamp` TIMESTAMP DEFAULT now(),
+  `shortcode` int DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+

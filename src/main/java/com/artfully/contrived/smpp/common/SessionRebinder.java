@@ -8,15 +8,16 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.jsmpp.session.SMPPSession;
 
-import com.artfully.contrived.smpp.dtos.SMPP;
 import com.artfully.contrived.smpp.listeners.IncomingMessageListener;
 import com.artfully.contrived.smpp.listeners.SessionStateListener;
+import com.artfully.contrived.smpp.model.SMPP;
+import com.github.rholder.retry.RetryException;
+import com.github.rholder.retry.Retryer;
+import com.github.rholder.retry.RetryerBuilder;
+import com.github.rholder.retry.StopStrategies;
+import com.github.rholder.retry.WaitStrategies;
 import com.google.common.eventbus.EventBus;
-import com.inmobia.utils.retryer.RetryException;
-import com.inmobia.utils.retryer.Retryer;
-import com.inmobia.utils.retryer.RetryerBuilder;
-import com.inmobia.utils.retryer.StopStrategies;
-import com.inmobia.utils.retryer.WaitStrategies;
+
 
 //TODO theres a lot of code here that is repeated from Binder. merge the 2?
 public class SessionRebinder implements Callable<SMPPSession> {
@@ -49,7 +50,7 @@ public class SessionRebinder implements Callable<SMPPSession> {
 
     @Override
     public SMPPSession call() throws Exception {
-	logger.debug("Retry count " + this.retryer.getRetryCount());
+	logger.debug("Retry count " + this.retryer);
 	SMPPSession session = new SMPPSession();
 	String bound = "";
 	try {

@@ -5,40 +5,35 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.net.ConnectException;
 import java.util.Properties;
 
-import com.artfully.contrived.smpp.dtos.SMPP;
-import com.google.common.base.Predicate;
-import com.inmobia.utils.retryer.Attempt;
-import com.inmobia.utils.retryer.ExceptionClassPredicate;
-import com.inmobia.utils.retryer.StopStrategies;
-import com.inmobia.utils.retryer.StopStrategy;
-import com.inmobia.utils.retryer.WaitStrategies;
-import com.inmobia.utils.retryer.WaitStrategy;
+import com.github.rholder.retry.StopStrategies;
+import com.github.rholder.retry.StopStrategy;
+import com.github.rholder.retry.WaitStrategies;
+import com.github.rholder.retry.WaitStrategy;
 
 public class RebindParams {
-    private final StopStrategy stopStrategy;
-    private final WaitStrategy waitStrategy;;
-    private final Predicate<Attempt<SMPP>> rejectPredicate;
+	private final StopStrategy stopStrategy;
+	private final WaitStrategy waitStrategy;;
+	private final Class<? extends Exception> retryException;
 
-    public StopStrategy getStopStrategy() {
-        return stopStrategy;
-    }
+	public RebindParams(Properties props) {
 
-    public WaitStrategy getWaitStrategy() {
-        return waitStrategy;
-    }
+		this.stopStrategy = StopStrategies.stopAfterAttempt(Integer
+				.parseInt(props.getProperty("retry.attempts")));
+		this.waitStrategy = WaitStrategies.incrementingWait(5, SECONDS,
+				Integer.parseInt(props.getProperty("retry.waits")), SECONDS);
+		this.retryException = ConnectException.class;
+	}
 
-    public Predicate<Attempt<SMPP>> getRejectPredicate() {
-        return rejectPredicate;
-    }
+	public StopStrategy getStopStrategy() {
+		return stopStrategy;
+	}
 
-    public RebindParams(Properties props) {
+	public WaitStrategy getWaitStrategy() {
+		return waitStrategy;
+	}
 
-        this.stopStrategy = StopStrategies.stopAfterAttempt(Integer
-    	    .parseInt(props.getProperty("retry.attempts")));
-        this.waitStrategy = WaitStrategies.incrementingWait(5, SECONDS,
-    	    Integer.parseInt(props.getProperty("retry.waits")),
-    	    SECONDS);
-        this.rejectPredicate = new ExceptionClassPredicate<SMPP>(
-    	    ConnectException.class);
-    }
+	public Class<? extends Exception> getRetryException() {
+		return retryException;
+	}
+
 }

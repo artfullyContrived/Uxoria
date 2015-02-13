@@ -5,7 +5,7 @@ package com.artfully.contrived.smpp.receiver.workers;
 
 import java.util.Collection;
 
-import com.artfully.contrived.smpp.dtos.SMPP;
+import com.artfully.contrived.smpp.model.SMPP;
 
 public class ReceiverShutdownHook extends Thread {
 

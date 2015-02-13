@@ -6,7 +6,7 @@ package com.artfully.contrived.smpp.listeners;
 import org.apache.log4j.Logger;
 import org.jsmpp.extra.SessionState;
 
-import com.artfully.contrived.smpp.dtos.SMPP;
+import com.artfully.contrived.smpp.model.SMPP;
 import com.google.common.eventbus.EventBus;
 
 /**

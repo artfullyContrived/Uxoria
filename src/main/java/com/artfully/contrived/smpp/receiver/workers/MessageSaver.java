@@ -12,8 +12,9 @@ import java.sql.SQLException;
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.DeliverSm;
 
+import com.artfully.contrived.util.DBUtils;
 import com.google.common.math.IntMath;
-import com.inmobia.util.DBUtils;
+
 
 /**
  * The Class Persistor.

@@ -24,246 +24,247 @@ import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
 import org.jsmpp.bean.DeliverSm;
 
-import com.artfully.contrived.smpp.dtos.ContentItem;
-import com.artfully.contrived.smpp.dtos.SMPP;
-import com.inmobia.util.DBUtils;
+import com.artfully.contrived.smpp.model.ContentItem;
+import com.artfully.contrived.smpp.model.SMPP;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class UxoriaUtils.
  */
 public class UxoriaUtils {
 
-    /** The db utils. */
-    private static DBUtils dbUtils;
+	/** The db utils. */
+	private static DBUtils dbUtils;
 
-    private static Properties props;
+	private static Properties props;
 
-    /** The logger. */
-    private static Logger logger = Logger.getLogger(UxoriaUtils.class);
+	/** The logger. */
+	private static Logger logger = Logger.getLogger(UxoriaUtils.class);
 
-    /** The skey spec. */
-    static SecretKeySpec skeySpec = null;
+	/** The skey spec. */
+	static SecretKeySpec skeySpec = null;
 
-    private UxoriaUtils() {
+	private UxoriaUtils() {
 
-    }
-
-    public static void initialize(Properties properties) {
-	props = properties;
-	dbUtils = new DBUtils(properties);
-    }
-
-    /**
-     * AES encrypt.
-     * 
-     * @param decrypted
-     *            the decrypted
-     * @return the byte[]
-     */
-    public static byte[] AESEncrypt(String decrypted) {
-
-	Cipher cipher;
-	byte[] encrypted = null;
-	try {
-	    cipher = Cipher.getInstance("AES");
-	    cipher.init(Cipher.ENCRYPT_MODE, getSkeySpec());
-	    encrypted = cipher.doFinal(decrypted.getBytes());
-	} catch (NoSuchAlgorithmException e) {
-	    logger.error(e, e);
-	} catch (NoSuchPaddingException e) {
-	    logger.error(e, e);
-	} catch (InvalidKeyException e) {
-	    logger.error(e, e);
-	} catch (IllegalBlockSizeException e) {
-	    logger.error(e, e);
-	} catch (BadPaddingException e) {
-	    logger.error(e, e);
 	}
 
-	return encrypted;
-
-    }
-
-    /**
-     * AES decrypt.
-     * 
-     * @param encrypted
-     *            the encrypted
-     * @return the byte[]
-     */
-    public static byte[] AESDecrypt(byte[] encrypted) {
-	Cipher cipher;
-	byte[] original = null;
-	try {
-	    cipher = Cipher.getInstance("AES");
-	    cipher.init(Cipher.DECRYPT_MODE, getSkeySpec());
-	    original = cipher.doFinal(encrypted);
-	} catch (NoSuchAlgorithmException e) {
-	    logger.error(e, e);
-	} catch (NoSuchPaddingException e) {
-	    logger.error(e, e);
-	} catch (InvalidKeyException e) {
-	    logger.error(e, e);
-	} catch (IllegalBlockSizeException e) {
-	    logger.error(e, e);
-	} catch (BadPaddingException e) {
-	    logger.error(e, e);
+	public static void initialize(Properties properties) {
+		props = properties;
+		dbUtils = new DBUtils(properties);
 	}
 
-	return original;
-    }
+	/**
+	 * AES encrypt.
+	 * 
+	 * @param decrypted
+	 *            the decrypted
+	 * @return the byte[]
+	 */
+	public static byte[] AESEncrypt(String decrypted) {
 
-    /**
-     * Gets the skey spec.
-     * 
-     * @return the skey spec
-     */
-    private static Key getSkeySpec() {
-	if (skeySpec != null) {
-	    return skeySpec;
+		Cipher cipher;
+		byte[] encrypted = null;
+		try {
+			cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.ENCRYPT_MODE, getSkeySpec());
+			encrypted = cipher.doFinal(decrypted.getBytes());
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e, e);
+		} catch (NoSuchPaddingException e) {
+			logger.error(e, e);
+		} catch (InvalidKeyException e) {
+			logger.error(e, e);
+		} catch (IllegalBlockSizeException e) {
+			logger.error(e, e);
+		} catch (BadPaddingException e) {
+			logger.error(e, e);
+		}
+
+		return encrypted;
+
 	}
-	KeyGenerator kgen;
-	SecretKey skey;
-	byte[] raw;
 
-	try {
-	    kgen = KeyGenerator.getInstance("AES");
-	    // kgen.init(128);
-	    skey = kgen.generateKey();
-	    raw = skey.getEncoded();
-	    skeySpec = new SecretKeySpec(raw, "AES");
-	} catch (NoSuchAlgorithmException e) {
-	    logger.error(e, e);
+	/**
+	 * AES decrypt.
+	 * 
+	 * @param encrypted
+	 *            the encrypted
+	 * @return the byte[]
+	 */
+	public static byte[] AESDecrypt(byte[] encrypted) {
+		Cipher cipher;
+		byte[] original = null;
+		try {
+			cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.DECRYPT_MODE, getSkeySpec());
+			original = cipher.doFinal(encrypted);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e, e);
+		} catch (NoSuchPaddingException e) {
+			logger.error(e, e);
+		} catch (InvalidKeyException e) {
+			logger.error(e, e);
+		} catch (IllegalBlockSizeException e) {
+			logger.error(e, e);
+		} catch (BadPaddingException e) {
+			logger.error(e, e);
+		}
+
+		return original;
 	}
-	return skeySpec;
 
-    }
+	/**
+	 * Gets the skey spec.
+	 * 
+	 * @return the skey spec
+	 */
+	private static Key getSkeySpec() {
+		if (skeySpec != null) {
+			return skeySpec;
+		}
+		KeyGenerator kgen;
+		SecretKey skey;
+		byte[] raw;
 
-    public static List<SMPP> getSessions(BindType bindType) {
+		try {
+			kgen = KeyGenerator.getInstance("AES");
+			// kgen.init(128);
+			skey = kgen.generateKey();
+			raw = skey.getEncoded();
+			skeySpec = new SecretKeySpec(raw, "AES");
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e, e);
+		}
+		return skeySpec;
 
-	logger.debug("bind type " + bindType.name());
-	List<SMPP> sessions = new LinkedList<SMPP>();
-	String property = props.getProperty("limit");
-
-	logger.debug("limit---> " + property);
-	// in case limit is specified
-	String limit = property == null ? "" : " and " + property;
-	String sql = "select * from SMPP where IsEnabled=1 and bindType=?"
-		+ limit
-		+ " order  by id;";
-	Connection conn = null;
-	try {
-	    conn = dbUtils.getConnection();
-	    PreparedStatement ps = conn.prepareStatement(sql);
-	    ps.setString(1, bindType.name());
-	    ResultSet resultSet = ps.executeQuery();
-	    SMPP smpp;
-	    while (resultSet.next()) {
-		smpp = new SMPP();
-		smpp.setBindType(resultSet.getString("bindType"));
-		smpp.setDataEncoding(resultSet.getInt("dataEncoding"));
-		smpp.setEnquireLinkTimer(resultSet.getInt("enquireLinkTimer"));
-		smpp.setID(resultSet.getInt("Id"));
-		smpp.setNPI(resultSet.getByte("NPI"));
-		smpp.setPassword(resultSet.getString("password"));
-		smpp.setShortCode(resultSet.getString("shortCode"));
-		smpp.setSMPPServerIP(resultSet.getString("SMPPServerIP"));
-		smpp.setSMPPServerPort(resultSet.getInt("SMPPServerPort"));
-		smpp.setSystemID(resultSet.getString("systemId"));
-		smpp.setTON(resultSet.getByte("TON"));
-		smpp.setTPS(resultSet.getInt("tps"));
-		sessions.add(smpp);
-
-	    }
-
-	    logger.debug("SESSIONS " + sessions);
-	} catch (SQLException e) {
-	    logger.error(e, e);
-	} finally {
-	    DBUtils.closeQuietly(conn);
 	}
-	return sessions;
-    }
 
-    public static void updpateSessionState(SMPP bean) {
-	logger.debug("updpateSessionState(). bean: " + bean);
-	Connection conn = null;
-	try {
-	    conn = dbUtils.getConnection();
-	    String query = "Update SMPP set status=? where id=?";
-	    PreparedStatement preparedStatement;
+	public static List<SMPP> getSessions(BindType bindType) {
 
-	    preparedStatement = conn.prepareStatement(query);
-	    preparedStatement.setString(1, bean.getSession().getSessionState()
-		    .name());
-	    preparedStatement.setInt(2, bean.getID());
-	    int x = preparedStatement.executeUpdate();
-	    logger.debug("Updated " + x + " sessions");
-	    preparedStatement.close();
+		logger.debug("bind type " + bindType.name());
+		List<SMPP> sessions = new LinkedList<SMPP>();
+		String property = props.getProperty("limit");
 
-	} catch (SQLException e) {
-	    logger.error(e, e);
-	} finally {
-	    DBUtils.closeQuietly(conn);
+		logger.debug("limit---> " + property);
+		// in case limit is specified
+		String limit = property == null ? "" : " and " + property;
+		String sql = "select * from SMPP where IsEnabled=1 " + limit
+				+ " order  by id;";
+		Connection conn = null;
+		try {
+			conn = dbUtils.getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			// ps.setString(1, bindType.name());
+			ResultSet resultSet = ps.executeQuery();
+			SMPP smpp;
+			System.out.println(sql + "" + bindType.name());
+			while (resultSet.next()) {
+				smpp = new SMPP();
+				smpp.setBindType(resultSet.getString("bindType"));
+				smpp.setDataEncoding(resultSet.getByte("dataEncoding"));
+				smpp.setEnquireLinkTimer(resultSet.getInt("enquireLinkTimer"));
+				smpp.setID(resultSet.getInt("Id"));
+				smpp.setNPI(resultSet.getByte("NPI"));
+				smpp.setPassword(resultSet.getString("password"));
+				smpp.setShortCode(resultSet.getString("shortCode"));
+				smpp.setSMPPServerIP(resultSet.getString("SMPPServerIP"));
+				smpp.setSMPPServerPort(resultSet.getInt("SMPPServerPort"));
+				smpp.setSystemID(resultSet.getString("systemId"));
+				smpp.setSystemType(resultSet.getString("systemType"));
+				smpp.setTON(resultSet.getByte("TON"));
+				smpp.setTPS(resultSet.getInt("tps"));
+				sessions.add(smpp);
+
+			}
+
+			logger.debug("SESSIONS " + sessions);
+		} catch (SQLException e) {
+			logger.error(e, e);
+		} finally {
+			DBUtils.closeQuietly(conn);
+		}
+		return sessions;
 	}
-    }
 
-    public static ContentItem getContentElement(DeliverSm deliverSm) {
-	logger.debug("getContentElement(). deliverSm: "
-		+ new String(deliverSm.getShortMessage()));
-	String query = "SELECT Id, keyword,headText, contentURL,tailText from ContentItem where shortcode=? and (keyword=? or keyword='default')order by if(keyword='default',1,0) ";
-	ContentItem contentElement = null;
-	String message = new String(deliverSm.getShortMessage(), Charset
-		.forName("UTF-8"));
+	public static void updpateSessionState(SMPP bean) {
+		logger.debug("updpateSessionState(). bean: " + bean);
+		Connection conn = null;
+		try {
+			conn = dbUtils.getConnection();
+			String query = "Update SMPP set status=? where id=?";
+			PreparedStatement preparedStatement;
 
-	String keyword = message.indexOf(' ') > 0 ? message.substring(0,
-		message.indexOf(' ')) : message;
-	Connection conn = null;
-	try {
-	    conn = dbUtils.getConnection();
-	    PreparedStatement preparedStatement = conn.prepareStatement(query);
-	    preparedStatement.setString(1, deliverSm.getDestAddress());
-	    preparedStatement.setString(2, keyword);
-	    ResultSet rs = preparedStatement.executeQuery();
+			preparedStatement = conn.prepareStatement(query);
+			preparedStatement.setString(1, bean.getSession().getSessionState()
+					.name());
+			System.out.println("sasas "
+					+ bean.getSession().getSessionState().name());
+			preparedStatement.setInt(2, bean.getID());
+			int x = preparedStatement.executeUpdate();
+			logger.debug("Updated " + x + " sessions");
+			preparedStatement.close();
 
-	    if (rs.next()) {
-		contentElement = new ContentItem();
-		contentElement.setId(rs.getInt("Id"));
-		contentElement.setHeadText(rs.getString("headText"));
-		contentElement.setContentURL(rs.getString("contentURL"));
-		contentElement.setTailText(rs.getString("tailText"));
-		contentElement.setKeyword(rs.getString("keyword"));
-	    }
-	} catch (SQLException e) {
-	    logger.error(e, e);
-	} finally {
-	    DBUtils.closeQuietly(conn);
+		} catch (SQLException e) {
+			logger.error(e, e);
+		} finally {
+			DBUtils.closeQuietly(conn);
+		}
 	}
-	logger.debug("Content Element " + contentElement);
-	return contentElement;
-    }
 
-    public static void pushToMessageQueue(String message, String recipient,
-	    String shortcode) {
-	logger.debug("pushToMessageQueue()." + message + " " + recipient + " "
-		+ shortcode);
-	String sql = "INSERT INTO MessageQueue (id,message, timestamp, recipient,smppid,priority) values(null,?,now(),?,(select id from SMPP where bindType='BIND_TX' and shortcode=? limit 1),?)";
-	Connection connection = null;
-	try {
-	    connection = dbUtils.getConnection();
-	    PreparedStatement preparedStatement = connection
-		    .prepareStatement(sql);
-	    preparedStatement.setString(1, message);
-	    preparedStatement.setString(2, recipient);
-	    preparedStatement.setString(3, shortcode);
-	    preparedStatement.setInt(4, 0);
-	    preparedStatement.executeUpdate();
-	    connection.close();
-	} catch (SQLException e) {
-	    logger.error(e, e);
-	} finally {
-	    DBUtils.closeQuietly(connection);
+	public static ContentItem getContentElement(DeliverSm deliverSm) {
+		logger.debug("getContentElement(). deliverSm: "
+				+ new String(deliverSm.getShortMessage()));
+		String query = "SELECT Id, keyword,headText, contentURL,tailText from ContentItem where shortcode=? and (keyword=? or keyword='default')order by if(keyword='default',1,0) ";
+		ContentItem contentElement = null;
+		String message = new String(deliverSm.getShortMessage(),
+				Charset.forName("UTF-8"));
+
+		String keyword = message.indexOf(' ') > 0 ? message.substring(0,
+				message.indexOf(' ')) : message;
+		Connection conn = null;
+		try {
+			conn = dbUtils.getConnection();
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			preparedStatement.setString(1, deliverSm.getDestAddress());
+			preparedStatement.setString(2, keyword);
+			ResultSet rs = preparedStatement.executeQuery();
+
+			if (rs.next()) {
+				contentElement = new ContentItem();
+				contentElement.setId(rs.getInt("Id"));
+				contentElement.setHeadText(rs.getString("headText"));
+				contentElement.setContentURL(rs.getString("contentURL"));
+				contentElement.setTailText(rs.getString("tailText"));
+				contentElement.setKeyword(rs.getString("keyword"));
+			}
+		} catch (SQLException e) {
+			logger.error(e, e);
+		} finally {
+			DBUtils.closeQuietly(conn);
+		}
+		logger.debug("Content Element " + contentElement);
+		return contentElement;
 	}
-    }
+
+	public static void pushToMessageQueue(String message, String recipient,
+			String shortcode) {
+		logger.debug("pushToMessageQueue()." + message + " " + recipient + " "
+				+ shortcode);
+		String sql = "INSERT INTO MessageQueue (id,message, timestamp, recipient,smppid,priority) values(null,?,now(),?,(select id from SMPP where bindType='BIND_TX' and shortcode=? limit 1),?)";
+		Connection connection = null;
+		try {
+			connection = dbUtils.getConnection();
+			PreparedStatement preparedStatement = connection
+					.prepareStatement(sql);
+			preparedStatement.setString(1, message);
+			preparedStatement.setString(2, recipient);
+			preparedStatement.setString(3, shortcode);
+			preparedStatement.setInt(4, 0);
+			preparedStatement.executeUpdate();
+			connection.close();
+		} catch (SQLException e) {
+			logger.error(e, e);
+		} finally {
+			DBUtils.closeQuietly(connection);
+		}
+	}
 }

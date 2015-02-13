@@ -1,4 +1,4 @@
-package com.artfully.contrived.smpp.dtos;
+package com.artfully.contrived.smpp.model;
 
 import java.io.Serializable;
 

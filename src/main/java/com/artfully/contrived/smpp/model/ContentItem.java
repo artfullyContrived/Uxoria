@@ -1,4 +1,4 @@
-package com.artfully.contrived.smpp.dtos;
+package com.artfully.contrived.smpp.model;
 
 import java.io.Serializable;
 
@@ -12,11 +12,8 @@ public class ContentItem implements Serializable {
     private static final long serialVersionUID = 8734880964191807240L;
     private int Id;
     private String keyword;
-
     private String headText;
-
     private String contentURL;
-
     private String tailText;
 
     public int getId() {

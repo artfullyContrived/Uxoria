@@ -3,7 +3,7 @@ package com.artfully.contrived.smpp.receiver.subscribers;
 import org.apache.log4j.Logger;
 import org.jsmpp.session.Session;
 
-import com.artfully.contrived.smpp.dtos.SMPP;
+import com.artfully.contrived.smpp.model.SMPP;
 import com.artfully.contrived.util.UxoriaUtils;
 import com.google.common.eventbus.Subscribe;
 
