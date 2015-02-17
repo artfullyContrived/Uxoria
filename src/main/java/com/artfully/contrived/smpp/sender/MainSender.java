@@ -29,84 +29,83 @@ import com.google.common.eventbus.EventBus;
 
 public class MainSender {
 
-	/** The props. */
-	private final Properties props;
+  /** The props. */
+  private final Properties props;
 
-	/** The Constant logger. */
-	private static final Logger logger = Logger.getLogger(MainSender.class);
+  /** The Constant logger. */
+  private static final Logger logger = Logger.getLogger(MainSender.class);
 
-	/** The Constant eventBus. */
-	private static EventBus eventBus;
+  /** The Constant eventBus. */
+  private static EventBus eventBus;
 
-	/**
-	 * Instantiates a new receiver.
-	 */
-	private MainSender() {
+  /**
+   * Instantiates a new receiver.
+   */
+  private MainSender() {
 
-		Properties log4jprops = PropertyUtils
-				.getPropertyFile(Props.log4jPropertyFile.getFileName());
-		PropertyConfigurator.configure(log4jprops);
-		eventBus = new EventBus();
-		props = PropertyUtils.getPropertyFile(Props.receiverPropertyFile
-				.getFileName());
-		UxoriaUtils.initialize(props);
+    Properties log4jprops = PropertyUtils
+        .getPropertyFile(Props.log4jPropertyFile.getFileName());
+    PropertyConfigurator.configure(log4jprops);
+    eventBus = new EventBus();
+    props = PropertyUtils.getPropertyFile(Props.receiverPropertyFile
+        .getFileName());
+    UxoriaUtils.initialize(props);
 
-	}
+  }
 
-	public static void main(String[] args) {
-		MainSender sender = new MainSender();
-		Collection<SMPP> smppBeans = sender.getTxSessions();
+  public static void main(String[] args) {
+    MainSender sender = new MainSender();
+    Collection<SMPP> smppBeans = sender.getTxSessions();
 
-		ExecutorService bindExecutor = Executors.newCachedThreadPool();
-		//TODO get num threads in properties file
-		ExecutorService consumerService = Executors.newFixedThreadPool(1000);
-		ScheduledExecutorService producerService = Executors
-				.newScheduledThreadPool(5);
-		RebindParams rebindParams = new RebindParams(sender.props);
+    ExecutorService bindExecutor = Executors.newCachedThreadPool();
+    // TODO get num threads in properties file
+    ExecutorService consumerService = Executors.newFixedThreadPool(1000);
+    ScheduledExecutorService producerService = Executors
+        .newScheduledThreadPool(5);
+    RebindParams rebindParams = new RebindParams(sender.props);
 
-		Collection<Future<SMPP>> futures = new LinkedList<Future<SMPP>>();
+    Collection<Future<SMPP>> futures = new LinkedList<Future<SMPP>>();
 
-		eventBus.register(new DeliveryReportSubscriber());
-		eventBus.register(new SessionStateSubscriber());
+    eventBus.register(new SessionStateSubscriber());
 
-		// get bindable sessions and pass them to binder
-		try {
-			Future<SMPP> future = null;
-			for (SMPP smppBean : smppBeans) {
-				future = bindExecutor.submit(RetryerBuilder
-						.<SMPP> newBuilder()
-						.withStopStrategy(rebindParams.getStopStrategy())
-						.withWaitStrategy(rebindParams.getWaitStrategy())
-						.retryIfExceptionOfType(
-								rebindParams.getRetryException())
-						.build()
-						.wrap(new SessionBinder(eventBus, smppBean,
-								rebindParams)));
+    // get bindable sessions and pass them to binder
+    try {
+      Future<SMPP> future = null;
+      for (SMPP smppBean : smppBeans) {
+        future = bindExecutor.submit(RetryerBuilder
+            .<SMPP> newBuilder()
+            .withStopStrategy(rebindParams.getStopStrategy())
+            .withWaitStrategy(rebindParams.getWaitStrategy())
+            .retryIfExceptionOfType(
+                rebindParams.getRetryException())
+            .build()
+            .wrap(new SessionBinder(eventBus, smppBean,
+                rebindParams)));
 
-				futures.add(future);
-			}
+        futures.add(future);
+      }
 
-			SMPP smpp = null;
-			for (Future<SMPP> session : futures) {
-				smpp = session.get();
+      SMPP smpp = null;
+      for (Future<SMPP> session : futures) {
+        smpp = session.get();
 
-				producerService.scheduleWithFixedDelay(new MessageQueuePoller(
-						smpp, consumerService), 0, 10, TimeUnit.SECONDS);
+        producerService.scheduleWithFixedDelay(new MessageQueuePoller(
+            smpp, consumerService), 0, 10, TimeUnit.SECONDS);
 
-			}
-		} catch (InterruptedException e) {
-			logger.error(e, e);
-		} catch (ExecutionException e) {
-			logger.error(e, e);
-		}
+      }
+    } catch (InterruptedException e) {
+      logger.error(e, e);
+    } catch (ExecutionException e) {
+      logger.error(e, e);
+    }
 
-		Runtime.getRuntime().addShutdownHook(
-				new ReceiverShutdownHook(smppBeans));
-		bindExecutor.shutdown();
-	}
+    Runtime.getRuntime().addShutdownHook(
+        new ReceiverShutdownHook(smppBeans));
+    bindExecutor.shutdown();
+  }
 
-	private Collection<SMPP> getTxSessions() {
-		logger.debug("getTxSessions().");
-		return UxoriaUtils.getSessions(BindType.BIND_TX);
-	}
+  private Collection<SMPP> getTxSessions() {
+    logger.debug("getTxSessions().");
+    return UxoriaUtils.getSessions(BindType.BIND_TX);
+  }
 }

@@ -19,6 +19,8 @@ import org.jsmpp.session.MessageReceiverListener;
 import org.jsmpp.session.Session;
 import org.jsmpp.util.InvalidDeliveryReceiptException;
 
+import com.artfully.contrived.smpp.model.MyDeliverSM;
+import com.artfully.contrived.smpp.model.SMPP;
 import com.google.common.eventbus.EventBus;
 
 /**
@@ -32,10 +34,11 @@ public class IncomingMessageListener implements MessageReceiverListener {
 	private static final Logger logger = Logger
 			.getLogger(IncomingMessageListener.class);
 	private final EventBus eventBus;
+  private SMPP smpp ;
 
-	public IncomingMessageListener(EventBus eventBus) {
+	public IncomingMessageListener(EventBus eventBus, SMPP smpp) {
 		checkNotNull(eventBus, "Event Bus must not be null");
-		this.eventBus = eventBus;
+		this.eventBus = eventBus;    	this.smpp =smpp;
 	}
 
 	/*
@@ -93,7 +96,7 @@ public class IncomingMessageListener implements MessageReceiverListener {
 			logger.debug("new SMS : "
 					+ new String(deliverSm.getShortMessage(), Charset
 							.forName("UTF-8")));
-			eventBus.post(deliverSm);
+			eventBus.post(new MyDeliverSM(smpp, deliverSm));
 
 		}
 	}

@@ -45,16 +45,23 @@ insert into SMPP values(null, '127.0.0.1', 2121, 555, 'BIND_TX', 'SMPP', 'test',
 
 insert into MessageQueue values(null, 1, '254736218228', 0,'Hi.', now());
 
- CREATE TABLE `MessageLog` (
+ CREATE TABLE `MOMessageLog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `smppId` int(11) DEFAULT '0',
   `type` varchar(11) DEFAULT '0',
   `message` varchar(1000) DEFAULT '',
- `recipient` varchar(14) NOT NULL,
-  `requestConfirmation` boolean DEFAULT false,
-  `timestamp` TIMESTAMP DEFAULT now(),
-  `shortcode` int DEFAULT 0,
+  `sender` varchar(14) NOT NULL,
+  `requestConfirmation` tinyint(1) DEFAULT '0',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `messageID` varchar(11) DEFAULT '0',
+  `isCharged` tinyint(1) DEFAULT '1',
+  `number_of_sms` int(4) DEFAULT '1',
+  `shortcode` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+INSERT INTO MessageLog (`ID`,`SMPPID`,`type`,`message`,`recipient`,`requestConfirmation`,"
+				+ "`timeStamp`,`messageID`,,)"
 
 

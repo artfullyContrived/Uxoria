@@ -1,9 +1,11 @@
 package com.artfully.contrived.smpp.model;
 
 import java.io.Serializable;
+
 import java.util.Date;
-//TODO possible divide onto MT and MO tables
-public class MessageLog implements Serializable {
+
+//TODO extends messageLog
+public class MOMessageLog implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -11,20 +13,13 @@ public class MessageLog implements Serializable {
   private int smppId;
   private int type;
   private String message;
-  private String recepient;
+  private String sender;
   private boolean requestConfirmation;
   private Date timestamp;
   private String messageId;
-  private boolean delivered;
-  private Date deliveryTime;
-  private int priority;
-  private String received;
-  private int status;
   private int serviceId;
   private boolean isCharged;
   private int numberOfSms;
-  private double price;
-  private boolean isSubscription;
   private int shortcode;
 
   public int getId() {
@@ -59,12 +54,12 @@ public class MessageLog implements Serializable {
     this.message = message;
   }
 
-  public String getRecepient() {
-    return recepient;
+  public String getSender() {
+    return sender;
   }
 
-  public void setRecepient(String recepient) {
-    this.recepient = recepient;
+  public void setSender(String sender) {
+    this.sender = sender;
   }
 
   public boolean isRequestConfirmation() {
@@ -91,46 +86,6 @@ public class MessageLog implements Serializable {
     this.messageId = messageId;
   }
 
-  public boolean isDelivered() {
-    return delivered;
-  }
-
-  public void setDelivered(boolean delivered) {
-    this.delivered = delivered;
-  }
-
-  public Date getDeliveryTime() {
-    return deliveryTime;
-  }
-
-  public void setDeliveryTime(Date deliveryTime) {
-    this.deliveryTime = deliveryTime;
-  }
-
-  public int getPriority() {
-    return priority;
-  }
-
-  public void setPriority(int priority) {
-    this.priority = priority;
-  }
-
-  public String getReceived() {
-    return received;
-  }
-
-  public void setReceived(String received) {
-    this.received = received;
-  }
-
-  public int getStatus() {
-    return status;
-  }
-
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
   public int getServiceId() {
     return serviceId;
   }
@@ -155,22 +110,6 @@ public class MessageLog implements Serializable {
     this.numberOfSms = numberOfSms;
   }
 
-  public double getPrice() {
-    return price;
-  }
-
-  public void setPrice(double price) {
-    this.price = price;
-  }
-
-  public boolean isSubscription() {
-    return isSubscription;
-  }
-
-  public void setSubscription(boolean isSubscription) {
-    this.isSubscription = isSubscription;
-  }
-
   public int getShortcode() {
     return shortcode;
   }
@@ -181,6 +120,37 @@ public class MessageLog implements Serializable {
 
   public static long getSerialversionuid() {
     return serialVersionUID;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("MOMessageLog [id=");
+    builder.append(id);
+    builder.append(", smppId=");
+    builder.append(smppId);
+    builder.append(", type=");
+    builder.append(type);
+    builder.append(", message=");
+    builder.append(message);
+    builder.append(", sender=");
+    builder.append(sender);
+    builder.append(", requestConfirmation=");
+    builder.append(requestConfirmation);
+    builder.append(", timestamp=");
+    builder.append(timestamp);
+    builder.append(", messageId=");
+    builder.append(messageId);
+    builder.append(", serviceId=");
+    builder.append(serviceId);
+    builder.append(", isCharged=");
+    builder.append(isCharged);
+    builder.append(", numberOfSms=");
+    builder.append(numberOfSms);
+    builder.append(", shortcode=");
+    builder.append(shortcode);
+    builder.append("]");
+    return builder.toString();
   }
 
 }

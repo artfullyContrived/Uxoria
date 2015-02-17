@@ -69,7 +69,7 @@ public class SessionRebinder implements Callable<SMPPSession> {
 	smpp.setSession(session);
 	eventBus.post(smpp);
 
-	session.setMessageReceiverListener(new IncomingMessageListener(eventBus));
+	session.setMessageReceiverListener(new IncomingMessageListener(eventBus,smpp));
 	session.addSessionStateListener(sessionStateMonitor);
 	session.setEnquireLinkTimer(smpp.getEnquireLinkTimer());
 

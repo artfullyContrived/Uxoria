@@ -147,16 +147,16 @@ public class UxoriaUtils {
 		logger.debug("limit---> " + property);
 		// in case limit is specified
 		String limit = property == null ? "" : " and " + property;
-		String sql = "select * from SMPP where IsEnabled=1 " + limit
+		String sql = "select * from SMPP where IsEnabled=1 and bindType=?" + limit
 				+ " order  by id;";
 		Connection conn = null;
 		try {
 			conn = dbUtils.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
-			// ps.setString(1, bindType.name());
+			ps.setString(1, bindType.name());
 			ResultSet resultSet = ps.executeQuery();
 			SMPP smpp;
-			System.out.println(sql + "" + bindType.name());
+			System.out.println(sql + " " + bindType.name());
 			while (resultSet.next()) {
 				smpp = new SMPP();
 				smpp.setBindType(resultSet.getString("bindType"));

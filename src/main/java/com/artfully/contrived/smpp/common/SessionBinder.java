@@ -61,7 +61,7 @@ public class SessionBinder implements Callable<SMPP>,
 		eventBus.post(smpp);
 
 		session.setTransactionTimer(5000L);
-		session.setMessageReceiverListener(new IncomingMessageListener(eventBus));
+		session.setMessageReceiverListener(new IncomingMessageListener(eventBus, smpp));
 		session.addSessionStateListener(new SessionStateListener(smpp, eventBus));
 		session.addSessionStateListener(this);
 		session.setEnquireLinkTimer(smpp.getEnquireLinkTimer());

@@ -27,13 +27,13 @@ public class MessageSender implements Callable<String> {
 			+ "values (null,?,?,?,?,?)";
 	private final String removeFromQueue = "Delete from MessageQueue where id=?";
 
-	private String moveToLog = "INSERT INTO MessageLog (id, smppid, message, recipient, requestConfirmation, timestamp,shortcode ) "
+	private String moveToLog = "INSERT INTO MTMessageLog (id, smppid, message, recipient, requestConfirmation, timestamp,shortcode ) "
 			+ "values(null,?,?,?,?,?,?)";
 
 	private MessageQueue messageQueue;
 
-	public MessageSender(ShortMessage message, MessageQueue messageQueue,
-			RateLimiter rateLimiter) throws SQLException {
+	public MessageSender(ShortMessage message, MessageQueue messageQueue, RateLimiter rateLimiter)
+			throws SQLException {
 		this.message = message;
 		this.messageQueue = messageQueue;
 		this.rateLimiter = rateLimiter;
@@ -44,26 +44,22 @@ public class MessageSender implements Callable<String> {
 	public String call() throws Exception {
 
 		String x = "";
-		if (!message.getSession().getSessionState()
-				.equals(SessionState.BOUND_TX)) {
+		if (!message.getSession().getSessionState().equals(SessionState.BOUND_TX)) {
 			return x;
 		}
 		logger.debug(" Sending message to " + message.getDestinationAddr());
 
 		try {
 			rateLimiter.acquire();
-			x = message.getSession().submitShortMessage(
-					message.getServiceType(), message.getSourceAddrTon(),
-					message.getSourceAddrNpi(), message.getSourceAddr(),
-					message.getDestAddrTon(), message.getDestAddrNpi(),
-					message.getDestinationAddr(), message.getEsmClass(),
-					message.getProtocolId(), message.getPriorityFlag(),
-					message.getScheduleDeliveryTime(),
-					message.getValidityPeriod(),
-					message.getRegisteredDelivery(),
+			x = message.getSession().submitShortMessage(message.getServiceType(),
+					message.getSourceAddrTon(), message.getSourceAddrNpi(),
+					message.getSourceAddr(), message.getDestAddrTon(), message.getDestAddrNpi(),
+					message.getDestinationAddr(), message.getEsmClass(), message.getProtocolId(),
+					message.getPriorityFlag(), message.getScheduleDeliveryTime(),
+					message.getValidityPeriod(), message.getRegisteredDelivery(),
 					message.getReplaceIfPresentFlag(), message.getDataCoding(),
-					message.getSmDefaultMsgId(),
-					message.getShortMessage().getBytes(),// TODO Charset?
+					message.getSmDefaultMsgId(), message.getShortMessage().getBytes(),// TODO
+																						// Charset?
 					message.getOptionalParameters());
 			logger.debug("x " + x);
 
@@ -75,12 +71,15 @@ public class MessageSender implements Callable<String> {
 			statement.setInt(4, 1);
 			statement.setDate(5, new Date(System.currentTimeMillis()));
 			statement.setString(6, message.getSourceAddr());
+			statement.setString(7, x);
+
 			statement.execute();
 
+			// delete from queue
 			statement = conn.prepareStatement(removeFromQueue);
 			statement.setInt(1, messageQueue.getId());
 			int removed = statement.executeUpdate();
-			System.out.println("Removed from queue "+ removed);
+			System.out.println("Removed from queue " + removed);
 			conn.close();
 
 		} catch (Exception e) {

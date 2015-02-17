@@ -3,103 +3,79 @@
  */
 package com.artfully.contrived.smpp.receiver.workers;
 
-import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
-import org.jsmpp.bean.DeliverSm;
 
+import com.artfully.contrived.smpp.model.MyDeliverSM;
 import com.artfully.contrived.util.DBUtils;
-import com.google.common.math.IntMath;
-
 
 /**
  * The Class Persistor.
  */
 public class MessageSaver implements Runnable {
 
-    /** The deliver sm. */
-    private final DeliverSm deliverSM;
+  /** The deliver sm. */
+  private final MyDeliverSM deliverSM;
 
-    private Connection conn;
+  private Connection conn;
 
-    /** The Constant logger. */
-    private static final Logger logger = Logger.getLogger(MessageSaver.class);
+  /** The Constant logger. */
+  private static final Logger logger = Logger.getLogger(MessageSaver.class);
 
-    /**
-     * Instantiates a new persistor.
-     * 
-     * @param take
-     *            the take
-     */
-    public MessageSaver(final DeliverSm deliverSm) {
-	this.deliverSM = deliverSm;
-	try {
-	    this.conn = DBUtils.getInstance().getConnection();
-	} catch (SQLException e) {
-	    logger.error(e, e);
-	}
+  private final String query = "INSERT INTO MOMessageLog (`id`,`smppId`,`type`,`message`,`sender`,`requestConfirmation`,`timestamp`,"
+      + "`messageID`,`isCharged`,`shortcode`)"
+      + " values(null,?,?,?,?,?,now(),?,?,?)";
+  /**
+   * Instantiates a new persistor.
+   * 
+   * @param take
+   *          the take
+   */
+  public MessageSaver(final MyDeliverSM deliverSm) {
+    this.deliverSM = deliverSm;
+    try {
+      this.conn = DBUtils.getInstance().getConnection();
+    } catch (SQLException e) {
+      logger.error(e, e);
     }
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    @Override
-    // TODO remove the hardcoded values
-    // TODO make sure we get th right values
-    public void run() {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Runnable#run()
+   */
+  @Override
+  // TODO get message length
+  public void run() {
 
-	logger.debug("Ive been given a message to save: "
-		+ Thread.currentThread().getName() + " " + deliverSM);
-	String query = "INSERT INTO MessageLog (`ID`,`SMPPID`,`type`,`SMS`,`receiver`,`requestConfirmation`,"
-		+
-		"`timeStamp`,`messageID`,`delivered`,`deliveryTime`,`sent`,`priority`,`received`,"
-		+
-		"`status`,`serviceid`,`isCharged`,`number_of_sms`,`price`,`isSubscription`,`shortcode`)"
-		+
-		" values(null,?,?,?,?,?,now(),?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	PreparedStatement ps = null;
-	try {
-	    ps = conn.prepareStatement(query);
+    logger.debug("incoming message  " + Thread.currentThread().getName() + " "
+        + deliverSM);
 
-	    ps.setInt(1, 1);// `SMPPID`
-	    ps.setInt(2, 2);// `type`
-	    ps.setString(3, new String(deliverSM.getShortMessage(), Charset
-		    .forName("UTF-8")));// `SMS`
-	    ps.setString(4, deliverSM.getSourceAddr());// `receiver`
-	    ps.setBoolean(5, deliverSM.isSmeDeliveryAckRequested());// `requestConfirmation`
-	    // tmestamp
-	    ps.setByte(6, deliverSM.getSmDefaultMsgId());// `messageID`
-	    ps.setString(7, "");// `delivered`
-	    ps.setString(8, deliverSM.getScheduleDeliveryTime());// `deliveryTime`
-	    ps.setBoolean(9, false);// `sent`
-	    ps.setByte(10, deliverSM.getPriorityFlag());// `priority`
-	    ps.setBoolean(11, true);// `received`
-	    ps.setString(12, deliverSM.getCommandStatusAsHex());// `status`
-	    ps.setInt(13, 1);// `serviceid`
-	    ps.setBoolean(14, false);// `isCharged`
-	    ps.setInt(15, IntMath.divide(deliverSM.getShortMessage().length,
-		    160, RoundingMode.UP));// `number_of_sms`
-	    ps.setString(16, "");// `price`
-	    ps.setBoolean(17, false);// `isSubscription`
-	    ps.setString(18, deliverSM.getDestAddress());// `shortcode` */
 
-	    ps.executeUpdate();
+    PreparedStatement ps = null;
+    try {
+      ps = conn.prepareStatement(query);
 
-	} catch (SQLException e) {
-	    logger.error(e, e);
-	} finally {
-	    DBUtils.closeQuietly(ps);
-	    DBUtils.closeQuietly(conn);
-	}
+      ps.setInt(1, deliverSM.getID());// `SMPPID`
+      ps.setString(2, deliverSM.getEsmClass().name());// `type`
+      ps.setString(3, new String(deliverSM.getShortMessage(), Charset.forName("UTF-8")));// `message
+      ps.setString(4, deliverSM.getSourceAddr());// `sender`
+      ps.setBoolean(5, deliverSM.isSmeDeliveryAckRequested());// `requestConfirmation`
+      ps.setInt(6, deliverSM.getSequenceNumber());// `messageID`
+     ps.setBoolean(7, false);// `isCharged`
+      ps.setString(8, deliverSM.getDestAddress());// `shortcode` 
+      ps.executeUpdate();
+
+    } catch (SQLException e) {
+      logger.error(e, e);
+    } finally {
+      DBUtils.closeQuietly(ps);
+      DBUtils.closeQuietly(conn);
     }
-
-    public static void main(String[] args) {
-	int x = 1601;
-	System.out.println(IntMath.divide(x, 160, RoundingMode.UP));
-    }
+  }
 }

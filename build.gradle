@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin:'application'
 
-mainClassName = "com.artfully.contrived.smpp.sender.MainSender"
+mainClassName = "com.artfully.contrived.smpp.receiver.MainReceiver"
 
 group = 'com.artfully.contrived.smpp'
 version = '1.0.0'
