@@ -8,8 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
-import org.jsmpp.bean.DeliverSm;
 
+import com.artfully.contrived.smpp.model.MyDeliverSM;
 import com.artfully.contrived.smpp.receiver.workers.ContentHandler;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -29,9 +29,9 @@ public class ContentHandlingSubscriber {
 		    .newCachedThreadPool());
 
     @Subscribe
-    public void getContent(DeliverSm deliverSm) {
-	logger.debug("getContent(). for sms : "
-		+ new String(deliverSm.getShortMessage()));
+    public void getContent(MyDeliverSM deliverSm) {
+      System.err.println("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
+	logger.debug("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
 
 	service.submit(new ContentHandler(deliverSm));
 

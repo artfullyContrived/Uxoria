@@ -22,9 +22,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.log4j.Logger;
 import org.jsmpp.bean.BindType;
-import org.jsmpp.bean.DeliverSm;
 
 import com.artfully.contrived.smpp.model.ContentItem;
+import com.artfully.contrived.smpp.model.MyDeliverSM;
 import com.artfully.contrived.smpp.model.SMPP;
 
 /**
@@ -185,8 +185,8 @@ public class UxoriaUtils {
 		return sessions;
 	}
 
-	public static void updpateSessionState(SMPP bean) {
-		logger.debug("updpateSessionState(). bean: " + bean);
+	public static void updateSessionState(SMPP smpp) {
+		logger.debug("updpateSessionState(). bean: " + smpp);
 		Connection conn = null;
 		try {
 			conn = dbUtils.getConnection();
@@ -194,11 +194,11 @@ public class UxoriaUtils {
 			PreparedStatement preparedStatement;
 
 			preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setString(1, bean.getSession().getSessionState()
+			preparedStatement.setString(1, smpp.getSession().getSessionState()
 					.name());
 			System.out.println("sasas "
-					+ bean.getSession().getSessionState().name());
-			preparedStatement.setInt(2, bean.getID());
+					+ smpp.getSession().getSessionState().name());
+			preparedStatement.setInt(2, smpp.getID());
 			int x = preparedStatement.executeUpdate();
 			logger.debug("Updated " + x + " sessions");
 			preparedStatement.close();
@@ -210,12 +210,12 @@ public class UxoriaUtils {
 		}
 	}
 
-	public static ContentItem getContentElement(DeliverSm deliverSm) {
+	public static ContentItem getContentElement(MyDeliverSM deliverSm2) {
 		logger.debug("getContentElement(). deliverSm: "
-				+ new String(deliverSm.getShortMessage()));
+				+ new String(deliverSm2.getShortMessage()));
 		String query = "SELECT Id, keyword,headText, contentURL,tailText from ContentItem where shortcode=? and (keyword=? or keyword='default')order by if(keyword='default',1,0) ";
 		ContentItem contentElement = null;
-		String message = new String(deliverSm.getShortMessage(),
+		String message = new String(deliverSm2.getShortMessage(),
 				Charset.forName("UTF-8"));
 
 		String keyword = message.indexOf(' ') > 0 ? message.substring(0,
@@ -224,7 +224,7 @@ public class UxoriaUtils {
 		try {
 			conn = dbUtils.getConnection();
 			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setString(1, deliverSm.getDestAddress());
+			preparedStatement.setString(1, deliverSm2.getDestAddress());
 			preparedStatement.setString(2, keyword);
 			ResultSet rs = preparedStatement.executeQuery();
 

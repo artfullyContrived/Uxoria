@@ -1,26 +1,18 @@
 package com.artfully.contrived.smpp.common;
 
-import java.net.ConnectException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.jsmpp.session.SMPPSession;
-
-import com.artfully.contrived.smpp.listeners.IncomingMessageListener;
-import com.artfully.contrived.smpp.listeners.SessionStateListener;
-import com.artfully.contrived.smpp.model.SMPP;
-import com.github.rholder.retry.RetryException;
-import com.github.rholder.retry.Retryer;
-import com.github.rholder.retry.RetryerBuilder;
-import com.github.rholder.retry.StopStrategies;
-import com.github.rholder.retry.WaitStrategies;
-import com.google.common.eventbus.EventBus;
 
 
 //TODO theres a lot of code here that is repeated from Binder. merge the 2?
 public class SessionRebinder implements Callable<SMPPSession> {
+
+  @Override
+  public SMPPSession call() throws Exception {
+    // TODO Auto-generated method stub
+    return null;
+  }/*
 
     private SMPP smpp;
 
@@ -29,12 +21,12 @@ public class SessionRebinder implements Callable<SMPPSession> {
 
     private final Retryer<SMPPSession> retryer;
 
-    private SessionStateListener sessionStateMonitor;
+    private MySessionStateListener sessionStateMonitor;
 
     private EventBus eventBus;
 
     public SessionRebinder(SMPP smpp,
-	    EventBus eventBus, SessionStateListener sessionStateMonitor) {
+	    EventBus eventBus, MySessionStateListener sessionStateMonitor) {
 	this.smpp = smpp;
 	this.eventBus = eventBus;
 	this.sessionStateMonitor = sessionStateMonitor;
@@ -79,4 +71,4 @@ public class SessionRebinder implements Callable<SMPPSession> {
     public SMPPSession rebind() throws ExecutionException, RetryException {
 	return this.retryer.call(this);
     }
-}
+*/}

@@ -17,8 +17,9 @@ import org.jsmpp.bean.BindType;
 import com.artfully.contrived.smpp.common.RebindParams;
 import com.artfully.contrived.smpp.common.SessionBinder;
 import com.artfully.contrived.smpp.model.SMPP;
-import com.artfully.contrived.smpp.receiver.subscribers.DeliveryReportSubscriber;
+import com.artfully.contrived.smpp.receiver.subscribers.ContentHandlingSubscriber;
 import com.artfully.contrived.smpp.receiver.subscribers.MessageSavingSubscriber;
+import com.artfully.contrived.smpp.receiver.subscribers.SessionStateSubscriber;
 import com.artfully.contrived.smpp.receiver.workers.ReceiverShutdownHook;
 import com.artfully.contrived.util.PropertyUtils;
 import com.artfully.contrived.util.Props;
@@ -31,6 +32,7 @@ import com.google.common.eventbus.EventBus;
  */
 // TODO improve the naming of the classes to a way that makes sense
 // TODO take care of CharEncoding everywhere
+// TODO add RateLimiter in case we are flooded.
 public class MainReceiver {
 
   /** The props. */
@@ -70,10 +72,10 @@ public class MainReceiver {
     BasicConfigurator.configure();
     MainReceiver receiver = new MainReceiver();
 
-    // eventBus.register(new ContentHandlingSubscriber());
+    eventBus.register(new ContentHandlingSubscriber());
     eventBus.register(new MessageSavingSubscriber());
-    eventBus.register(new DeliveryReportSubscriber());
-    // eventBus.register(new SessionStateSubscriber());
+    //eventBus.register(new DeliveryReportSubscriber());
+    eventBus.register(new SessionStateSubscriber());
 
     Collection<SMPP> smppBeans = receiver.getRxSessions();
     // TODO fixed number if threads
@@ -83,7 +85,6 @@ public class MainReceiver {
 
     // get bindable sessions and pass them to binder
 
-    // TODO many are lost here only the last one is in get
     for (SMPP smppBean : smppBeans) {
       executor.submit(RetryerBuilder.<SMPP> newBuilder()
           .withStopStrategy(rebindParams.getStopStrategy())
@@ -91,12 +92,10 @@ public class MainReceiver {
           .retryIfExceptionOfType(rebindParams.getRetryException())
           .build()
           .wrap(new SessionBinder(eventBus, smppBean, rebindParams)));
-
     }
 
-    Runtime.getRuntime().addShutdownHook(
-        new ReceiverShutdownHook(smppBeans));
-    // executor.shutdown();
+    Runtime.getRuntime().addShutdownHook(new ReceiverShutdownHook(smppBeans));
+    executor.shutdown();
 
   }
 

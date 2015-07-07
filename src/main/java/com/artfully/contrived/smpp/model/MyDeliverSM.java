@@ -6,9 +6,8 @@ import java.util.Map;
 import org.jsmpp.bean.DeliverSm;
 import org.jsmpp.bean.MessageType;
 
-public class MyDeliverSM extends SMPP {
+public class MyDeliverSM {
 
-  private static final long serialVersionUID = 1L;
   private SMPP smpp;
   private DeliverSm deliverSm;
 
@@ -62,7 +61,7 @@ public class MyDeliverSM extends SMPP {
   }
 
   private MessageType getMessageType(byte bite) {
-    Map<Byte, MessageType> map = new HashMap();
+    Map<Byte, MessageType> map = new HashMap<>();
     for (MessageType x : MessageType.values()) {
       map.put(x.value(), x);
     }

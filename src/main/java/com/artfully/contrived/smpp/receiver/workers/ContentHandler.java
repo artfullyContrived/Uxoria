@@ -6,18 +6,18 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-import org.jsmpp.bean.DeliverSm;
 
 import com.artfully.contrived.smpp.model.ContentItem;
+import com.artfully.contrived.smpp.model.MyDeliverSM;
 import com.artfully.contrived.util.UxoriaUtils;
 
 public class ContentHandler implements Runnable {
 
   private static final Logger logger = Logger.getLogger(ContentHandler.class);
-  private final DeliverSm deliverSm;
+  private final MyDeliverSM deliverSm;
 
-  public ContentHandler(DeliverSm deliverSm) {
-    this.deliverSm = deliverSm;
+  public ContentHandler(MyDeliverSM deliversm) {
+    this.deliverSm = deliversm;
   }
 
   @Override
@@ -43,13 +43,12 @@ public class ContentHandler implements Runnable {
       logger.debug("Unknown keyword");
       buffer.append("invalid keyword");
     }
-    UxoriaUtils.pushToMessageQueue(buffer.toString(),
-        deliverSm.getSourceAddr(), deliverSm.getDestAddress());
+    UxoriaUtils.pushToMessageQueue(buffer.toString(), deliverSm.getSourceAddr(), deliverSm.getDestAddress());
 
   }
 
-  private ContentItem getContentElements(DeliverSm deliverSm) {
-    return UxoriaUtils.getContentElement(deliverSm);
+  private ContentItem getContentElements(MyDeliverSM deliverSm2) {
+    return UxoriaUtils.getContentElement(deliverSm2);
   }
 
   // get content for URL

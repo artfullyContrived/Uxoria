@@ -12,10 +12,7 @@ import org.apache.log4j.Logger;
 
 public final class DBUtils {
 	private static final Logger logger = Logger.getLogger(DBUtils.class);
-	/*
-	 * private final String username = "root"; private final String password =
-	 * "";
-	 */
+
 	private static DBUtils dbutil;
 	private BasicDataSource dataSource;
 
@@ -32,16 +29,17 @@ public final class DBUtils {
 	public DBUtils(String propertiesFile) {
 
 		dataSource = new BasicDataSource();
-		Properties props = new Properties(
-				PropertyUtils.getPropertyFile(propertiesFile));
+		Properties props = new Properties(PropertyUtils.getPropertyFile(propertiesFile));
 
 		dataSource.setDriverClassName(props.getProperty("JDBCSTRING"));
 		dataSource.setUsername(props.getProperty("username"));
 		dataSource.setPassword(props.getProperty("password"));
 		dataSource.setUrl(props.getProperty("CONNSTRING"));
+		dataSource.setRemoveAbandonedTimeout(30);
+		dataSource.setRemoveAbandoned(true);
 		dataSource.setInitialSize(100);
 		dataSource.setMaxActive(99);
-		dataSource.setMaxIdle(10);
+		dataSource.setMaxIdle(1);
 		dbutil = this;
 	}
 
