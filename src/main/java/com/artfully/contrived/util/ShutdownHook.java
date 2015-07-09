@@ -1,18 +1,17 @@
 /*
  * 
  */
-package com.artfully.contrived.smpp.receiver.workers;
+package com.artfully.contrived.util;
 
 import java.util.Collection;
 
 import com.artfully.contrived.smpp.model.SMPP;
-import com.artfully.contrived.util.UxoriaUtils;
 
-public class ReceiverShutdownHook extends Thread {
+public class ShutdownHook extends Thread {
 
     private Collection<SMPP> sessions;
 
-  public ReceiverShutdownHook(Collection<SMPP> smppBeans) {
+  public ShutdownHook(Collection<SMPP> smppBeans) {
     this.sessions = smppBeans;
     }
 

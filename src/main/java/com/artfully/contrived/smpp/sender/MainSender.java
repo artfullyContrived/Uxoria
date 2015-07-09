@@ -17,12 +17,11 @@ import org.jsmpp.bean.BindType;
 import com.artfully.contrived.smpp.common.RebindParams;
 import com.artfully.contrived.smpp.common.SessionBinder;
 import com.artfully.contrived.smpp.model.SMPP;
-import com.artfully.contrived.smpp.receiver.subscribers.DeliveryReportSubscriber;
 import com.artfully.contrived.smpp.receiver.subscribers.SessionStateSubscriber;
-import com.artfully.contrived.smpp.receiver.workers.ReceiverShutdownHook;
 import com.artfully.contrived.smpp.sender.workers.MessageQueuePoller;
 import com.artfully.contrived.util.PropertyUtils;
 import com.artfully.contrived.util.Props;
+import com.artfully.contrived.util.ShutdownHook;
 import com.artfully.contrived.util.UxoriaUtils;
 import com.github.rholder.retry.RetryerBuilder;
 import com.google.common.eventbus.EventBus;
@@ -43,14 +42,12 @@ public class MainSender {
    */
   private MainSender() {
 
-    Properties log4jprops = PropertyUtils
-        .getPropertyFile(Props.log4jPropertyFile.getFileName());
+    Properties log4jprops = PropertyUtils.getPropertyFile(Props.log4jPropertyFile.getFileName());
     PropertyConfigurator.configure(log4jprops);
     eventBus = new EventBus();
-    props = PropertyUtils.getPropertyFile(Props.receiverPropertyFile
-        .getFileName());
+    props = PropertyUtils.getPropertyFile(Props.receiverPropertyFile.getFileName());
+    
     UxoriaUtils.initialize(props);
-
   }
 
   public static void main(String[] args) {
@@ -60,8 +57,7 @@ public class MainSender {
     ExecutorService bindExecutor = Executors.newCachedThreadPool();
     // TODO get num threads in properties file
     ExecutorService consumerService = Executors.newFixedThreadPool(1000);
-    ScheduledExecutorService producerService = Executors
-        .newScheduledThreadPool(5);
+    ScheduledExecutorService producerService = Executors.newScheduledThreadPool(5);
     RebindParams rebindParams = new RebindParams(sender.props);
 
     Collection<Future<SMPP>> futures = new LinkedList<Future<SMPP>>();
@@ -76,11 +72,9 @@ public class MainSender {
             .<SMPP> newBuilder()
             .withStopStrategy(rebindParams.getStopStrategy())
             .withWaitStrategy(rebindParams.getWaitStrategy())
-            .retryIfExceptionOfType(
-                rebindParams.getRetryException())
+            .retryIfExceptionOfType(rebindParams.getRetryException())
             .build()
-            .wrap(new SessionBinder(eventBus, smppBean,
-                rebindParams)));
+            .wrap(new SessionBinder(eventBus, smppBean, rebindParams)));
 
         futures.add(future);
       }
@@ -89,8 +83,7 @@ public class MainSender {
       for (Future<SMPP> session : futures) {
         smpp = session.get();
 
-        producerService.scheduleWithFixedDelay(new MessageQueuePoller(
-            smpp, consumerService), 0, 10, TimeUnit.SECONDS);
+        producerService.scheduleWithFixedDelay(new MessageQueuePoller(smpp, consumerService), 0, 10, TimeUnit.SECONDS);
 
       }
     } catch (InterruptedException e) {
@@ -99,8 +92,7 @@ public class MainSender {
       logger.error(e, e);
     }
 
-    Runtime.getRuntime().addShutdownHook(
-        new ReceiverShutdownHook(smppBeans));
+    Runtime.getRuntime().addShutdownHook(new ShutdownHook(smppBeans));
     bindExecutor.shutdown();
   }
 

@@ -18,11 +18,12 @@ import com.artfully.contrived.smpp.common.RebindParams;
 import com.artfully.contrived.smpp.common.SessionBinder;
 import com.artfully.contrived.smpp.model.SMPP;
 import com.artfully.contrived.smpp.receiver.subscribers.ContentHandlingSubscriber;
+import com.artfully.contrived.smpp.receiver.subscribers.DeliveryReportSubscriber;
 import com.artfully.contrived.smpp.receiver.subscribers.MessageSavingSubscriber;
 import com.artfully.contrived.smpp.receiver.subscribers.SessionStateSubscriber;
-import com.artfully.contrived.smpp.receiver.workers.ReceiverShutdownHook;
 import com.artfully.contrived.util.PropertyUtils;
 import com.artfully.contrived.util.Props;
+import com.artfully.contrived.util.ShutdownHook;
 import com.artfully.contrived.util.UxoriaUtils;
 import com.github.rholder.retry.RetryerBuilder;
 import com.google.common.eventbus.EventBus;
@@ -33,6 +34,7 @@ import com.google.common.eventbus.EventBus;
 // TODO improve the naming of the classes to a way that makes sense
 // TODO take care of CharEncoding everywhere
 // TODO add RateLimiter in case we are flooded.
+// TODO add metrics
 public class MainReceiver {
 
   /** The props. */
@@ -74,7 +76,7 @@ public class MainReceiver {
 
     eventBus.register(new ContentHandlingSubscriber());
     eventBus.register(new MessageSavingSubscriber());
-    //eventBus.register(new DeliveryReportSubscriber());
+    eventBus.register(new DeliveryReportSubscriber());
     eventBus.register(new SessionStateSubscriber());
 
     Collection<SMPP> smppBeans = receiver.getRxSessions();
@@ -94,7 +96,7 @@ public class MainReceiver {
           .wrap(new SessionBinder(eventBus, smppBean, rebindParams)));
     }
 
-    Runtime.getRuntime().addShutdownHook(new ReceiverShutdownHook(smppBeans));
+    Runtime.getRuntime().addShutdownHook(new ShutdownHook(smppBeans));
     executor.shutdown();
 
   }

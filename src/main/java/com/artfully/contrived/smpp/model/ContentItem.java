@@ -1,17 +1,19 @@
 package com.artfully.contrived.smpp.model;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class ContentItem implements Serializable {
 
   private static final long serialVersionUID = 8734880964191807240L;
- 
+
   private int Id;
   private String keyword;
   private String headText;
   private String contentURL;
   private String tailText;
   private int shortCode;
+  private Map<String, String> params;
 
   public int getId() {
     return Id;
@@ -61,8 +63,12 @@ public class ContentItem implements Serializable {
     this.shortCode = shortCode;
   }
 
-  public static long getSerialversionuid() {
-    return serialVersionUID;
+  public Map<String, String> getParams() {
+    return params;
+  }
+
+  public void setParams(Map<String, String> params) {
+    this.params = params;
   }
 
   @Override
@@ -73,6 +79,7 @@ public class ContentItem implements Serializable {
     result = prime * result + ((contentURL == null) ? 0 : contentURL.hashCode());
     result = prime * result + ((headText == null) ? 0 : headText.hashCode());
     result = prime * result + ((keyword == null) ? 0 : keyword.hashCode());
+    result = prime * result + ((params == null) ? 0 : params.hashCode());
     result = prime * result + shortCode;
     result = prime * result + ((tailText == null) ? 0 : tailText.hashCode());
     return result;
@@ -104,6 +111,11 @@ public class ContentItem implements Serializable {
         return false;
     } else if (!keyword.equals(other.keyword))
       return false;
+    if (params == null) {
+      if (other.params != null)
+        return false;
+    } else if (!params.equals(other.params))
+      return false;
     if (shortCode != other.shortCode)
       return false;
     if (tailText == null) {
@@ -117,19 +129,21 @@ public class ContentItem implements Serializable {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("ContentItem [Id=")
-        .append(Id)
-        .append(", keyword=")
-        .append(keyword)
-        .append(", headText=")
-        .append(headText)
-        .append(", contentURL=")
-        .append(contentURL)
-        .append(", tailText=")
-        .append(tailText)
-        .append(", shortCode=")
-        .append(shortCode)
-        .append("]");
+    builder.append("ContentItem [Id=");
+    builder.append(Id);
+    builder.append(", keyword=");
+    builder.append(keyword);
+    builder.append(", headText=");
+    builder.append(headText);
+    builder.append(", contentURL=");
+    builder.append(contentURL);
+    builder.append(", tailText=");
+    builder.append(tailText);
+    builder.append(", shortCode=");
+    builder.append(shortCode);
+    builder.append(", params=");
+    builder.append(params);
+    builder.append("]");
     return builder.toString();
   }
 }

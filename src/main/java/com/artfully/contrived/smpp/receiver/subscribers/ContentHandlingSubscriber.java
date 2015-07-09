@@ -10,7 +10,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.log4j.Logger;
 
 import com.artfully.contrived.smpp.model.MyDeliverSM;
-import com.artfully.contrived.smpp.receiver.workers.ContentHandler;
+import com.artfully.contrived.smpp.receiver.workers.HTTPContentHandler;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -24,8 +24,7 @@ public class ContentHandlingSubscriber {
     private static final Logger logger = Logger
 	    .getLogger(ContentHandlingSubscriber.class);
 
-    private static final ExecutorService service = MoreExecutors
-	    .getExitingExecutorService((ThreadPoolExecutor) Executors
+    private static final ExecutorService service = MoreExecutors.getExitingExecutorService((ThreadPoolExecutor) Executors
 		    .newCachedThreadPool());
 
     @Subscribe
@@ -33,7 +32,7 @@ public class ContentHandlingSubscriber {
       System.err.println("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
 	logger.debug("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
 
-	service.submit(new ContentHandler(deliverSm));
+	service.submit(new HTTPContentHandler(deliverSm));
 
     }
 }

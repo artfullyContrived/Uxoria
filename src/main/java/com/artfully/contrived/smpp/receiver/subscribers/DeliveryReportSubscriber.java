@@ -28,9 +28,7 @@ public class DeliveryReportSubscriber {
 	    .getLogger(DeliveryReportSubscriber.class);
     
     // TODO Its not safe to use a cached thread pool?
-    private static final ExecutorService service = MoreExecutors
-	    .getExitingExecutorService((ThreadPoolExecutor) Executors
-		    .newCachedThreadPool());
+    private static final ExecutorService service = MoreExecutors.getExitingExecutorService((ThreadPoolExecutor) Executors.newCachedThreadPool());
 
     /**
      * Update smpp receiver.
