@@ -21,18 +21,17 @@ import com.google.common.util.concurrent.MoreExecutors;
  */
 public class ContentHandlingSubscriber {
 
-    private static final Logger logger = Logger
-	    .getLogger(ContentHandlingSubscriber.class);
+  private static final Logger logger = Logger.getLogger(ContentHandlingSubscriber.class);
 
-    private static final ExecutorService service = MoreExecutors.getExitingExecutorService((ThreadPoolExecutor) Executors
-		    .newCachedThreadPool());
+  private static final ExecutorService service = MoreExecutors
+      .getExitingExecutorService((ThreadPoolExecutor) Executors.newFixedThreadPool(100));
 
-    @Subscribe
-    public void getContent(MyDeliverSM deliverSm) {
-      System.err.println("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
-	logger.debug("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
+  @Subscribe
+  public void getContent(MyDeliverSM deliverSm) {
+    System.err.println("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
+    logger.debug("getContent(). for sms : " + new String(deliverSm.getShortMessage()));
 
-	service.submit(new HTTPContentHandler(deliverSm));
+    service.submit(new HTTPContentHandler(deliverSm));
 
-    }
+  }
 }

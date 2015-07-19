@@ -15,8 +15,8 @@ import org.apache.log4j.PropertyConfigurator;
 import org.jsmpp.bean.BindType;
 
 import com.artfully.contrived.smpp.common.RebindParams;
-import com.artfully.contrived.smpp.common.SessionBinder;
 import com.artfully.contrived.smpp.model.SMPP;
+import com.artfully.contrived.smpp.receiver.module.SessionBinderFactory;
 import com.artfully.contrived.smpp.receiver.subscribers.SessionStateSubscriber;
 import com.artfully.contrived.smpp.sender.workers.MessageQueuePoller;
 import com.artfully.contrived.util.PropertyUtils;
@@ -36,6 +36,8 @@ public class MainSender {
 
   /** The Constant eventBus. */
   private static EventBus eventBus;
+  
+  private static SessionBinderFactory sessionBinderFactory;
 
   /**
    * Instantiates a new receiver.
@@ -74,7 +76,7 @@ public class MainSender {
             .withWaitStrategy(rebindParams.getWaitStrategy())
             .retryIfExceptionOfType(rebindParams.getRetryException())
             .build()
-            .wrap(new SessionBinder(eventBus, smppBean, rebindParams)));
+            .wrap(sessionBinderFactory.create(smppBean)));
 
         futures.add(future);
       }

@@ -8,6 +8,8 @@ import java.net.ConnectException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.jsmpp.extra.SessionState;
 import org.jsmpp.session.SMPPSession;
@@ -19,17 +21,20 @@ import com.github.rholder.retry.RetryException;
 import com.github.rholder.retry.Retryer;
 import com.github.rholder.retry.RetryerBuilder;
 import com.google.common.eventbus.EventBus;
+import com.google.inject.assistedinject.Assisted;
 
 public class SessionBinder implements Callable<SMPP>, SessionStateListener {
 
-  private SMPP smpp;
-  private final EventBus eventBus;
   private static final Logger logger = Logger.getLogger(SessionBinder.class);
   private final Retryer<SMPP> retryer;
+  private final EventBus eventBus;
+  private SMPP smpp;
 
-  public SessionBinder(EventBus eventBus, SMPP smpp, RebindParams rebindParams) {
-    this.smpp = smpp;
+  @Inject
+  public SessionBinder(EventBus eventBus, RebindParams rebindParams, @Assisted SMPP smppBean) {
+    this.smpp = smppBean;
     this.eventBus = eventBus;
+    System.out.println("rebind params " + rebindParams);
     retryer = RetryerBuilder.<SMPP> newBuilder()
         .withStopStrategy(rebindParams.getStopStrategy())
         .withWaitStrategy(rebindParams.getWaitStrategy())
@@ -42,7 +47,7 @@ public class SessionBinder implements Callable<SMPP>, SessionStateListener {
     SMPPSession session = new SMPPSession();
     String bound = "";
     try {
-      bound = session.connectAndBind(smpp.getSMPPServerIP(),smpp.getSMPPServerPort(), smpp.getBindParameters());
+      bound = session.connectAndBind(smpp.getSMPPServerIP(), smpp.getSMPPServerPort(), smpp.getBindParameters());
     } catch (ConnectException NRE) {//
       logger.error("Could not bind will attempt to rebind.");
     } catch (IOException exception) {
@@ -53,7 +58,7 @@ public class SessionBinder implements Callable<SMPP>, SessionStateListener {
       throw new ConnectException("No connection");
     }
     logger.debug("bound--->" + bound);
-    System.err.println("session is null "+ session);
+    System.err.println("session is null " + session);
     smpp.setSession(session);
     eventBus.post(smpp);
 
@@ -65,11 +70,12 @@ public class SessionBinder implements Callable<SMPP>, SessionStateListener {
     return smpp;
   }
 
- //TODO metric rebind attempts
+  //TODO metric rebind attempts
   @Override
   public void onStateChange(SessionState currentState, SessionState originalState, Object obj) {
-    logger.debug("onStateChange(). currentState: " + currentState + " originalState: " + originalState + " obj: " + obj);
-   eventBus.post(smpp);
+    logger
+        .debug("onStateChange(). currentState: " + currentState + " originalState: " + originalState + " obj: " + obj);
+    eventBus.post(smpp);
 
     // retry bind here if its not a deliberate close
     if (currentState.equals(SessionState.CLOSED)

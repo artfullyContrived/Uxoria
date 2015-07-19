@@ -32,8 +32,7 @@ public class MessageSender implements Callable<String> {
 
   private MessageQueue messageQueue;
 
-  public MessageSender(ShortMessage message, MessageQueue messageQueue, RateLimiter rateLimiter)
-      throws SQLException {
+  public MessageSender(ShortMessage message, MessageQueue messageQueue, RateLimiter rateLimiter) throws SQLException {
     this.message = message;
     this.messageQueue = messageQueue;
     this.rateLimiter = rateLimiter;

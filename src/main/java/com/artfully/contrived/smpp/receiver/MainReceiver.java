@@ -3,20 +3,20 @@
  */
 package com.artfully.contrived.smpp.receiver;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.BasicConfigurator;
+import javax.inject.Inject;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.jsmpp.bean.BindType;
 
 import com.artfully.contrived.smpp.common.RebindParams;
-import com.artfully.contrived.smpp.common.SessionBinder;
 import com.artfully.contrived.smpp.model.SMPP;
+import com.artfully.contrived.smpp.receiver.module.SessionBinderFactory;
 import com.artfully.contrived.smpp.receiver.subscribers.ContentHandlingSubscriber;
 import com.artfully.contrived.smpp.receiver.subscribers.DeliveryReportSubscriber;
 import com.artfully.contrived.smpp.receiver.subscribers.MessageSavingSubscriber;
@@ -37,68 +37,59 @@ import com.google.common.eventbus.EventBus;
 // TODO add metrics
 public class MainReceiver {
 
-  /** The props. */
-  private final Properties props;
-
   /** The Constant logger. */
   private static final Logger logger = Logger.getLogger(MainReceiver.class);
 
-  /** The Constant eventBus. */
-  private static EventBus eventBus = new EventBus();
+  private Properties props;
 
-  /**
-   * Instantiates a new receiver.
-   */
-  private MainReceiver() {
-    Properties log4jprops = PropertyUtils
-        .getPropertyFile(Props.log4jPropertyFile.getFileName());
-    PropertyConfigurator.configure(log4jprops);
+  private EventBus eventBus;
 
-    props = PropertyUtils.getPropertyFile(Props.receiverPropertyFile
-        .getFileName());
-    // TODO this shouldn't be here
-    // http://misko.hevery.com/code-reviewers-guide/flaw-constructor-does-real-work/
-    UxoriaUtils.initialize(props);
+  private RebindParams rebindParams;
+
+  private SessionBinderFactory sessionBinderFactory;
+
+  @Inject
+  public MainReceiver(Properties props, EventBus eventBus, RebindParams rebindParams,
+      SessionBinderFactory sessionBinderFactory) {
+    super();
+    initializeLogger();
+    System.out.println("props " + props);
+
+    this.props = props;
+    this.eventBus = eventBus;
+    this.rebindParams = rebindParams;
+    this.sessionBinderFactory = sessionBinderFactory;
 
   }
 
-  /**
-   * The main method.
-   * 
-   * @param args
-   *          the arguments
-   * @throws IOException
-   */
+  private void initializeLogger() {
+    Properties log4jprops = PropertyUtils.getPropertyFile(Props.log4jPropertyFile.getFileName());
+    PropertyConfigurator.configure(log4jprops);
+  }
 
-  public static void main(String[] args) throws IOException {
-    BasicConfigurator.configure();
-    MainReceiver receiver = new MainReceiver();
-
+  public void start() {
+    UxoriaUtils.initialize(props);
     eventBus.register(new ContentHandlingSubscriber());
     eventBus.register(new MessageSavingSubscriber());
     eventBus.register(new DeliveryReportSubscriber());
     eventBus.register(new SessionStateSubscriber());
 
-    Collection<SMPP> smppBeans = receiver.getRxSessions();
-    // TODO fixed number if threads
-    ExecutorService executor = Executors.newFixedThreadPool(Integer
-        .parseInt(receiver.props.getProperty("numThreads", "10")));
-    RebindParams rebindParams = new RebindParams(receiver.props);
+    Collection<SMPP> smppBeans = getRxSessions();
+    ExecutorService executor = Executors.newFixedThreadPool(Integer.parseInt(props.getProperty("numThreads", "10")));
 
     // get bindable sessions and pass them to binder
-
+    System.out.println("rebinds " + rebindParams.getStopStrategy());
     for (SMPP smppBean : smppBeans) {
       executor.submit(RetryerBuilder.<SMPP> newBuilder()
           .withStopStrategy(rebindParams.getStopStrategy())
           .withWaitStrategy(rebindParams.getWaitStrategy())
           .retryIfExceptionOfType(rebindParams.getRetryException())
           .build()
-          .wrap(new SessionBinder(eventBus, smppBean, rebindParams)));
+          .wrap(sessionBinderFactory.create(smppBean)));
     }
 
     Runtime.getRuntime().addShutdownHook(new ShutdownHook(smppBeans));
     executor.shutdown();
-
   }
 
   /**

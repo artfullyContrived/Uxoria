@@ -92,7 +92,6 @@ public class MessageQueuePoller implements Runnable {
                 TIME_FORMATTER.format(resultSet
                     .getDate("timestamp")))
             .validityPeriod(TIME_FORMATTER.format(new Date()))
-
             .build();
         logger.debug("Added new message " + message);
         // TODO pass MessageQueue instead of SMPP

@@ -26,6 +26,8 @@ dependencies {
     compile 'javax.persistence:persistence-api:1.0.2'
     compile 'commons-dbcp:commons-dbcp:1.4'
     compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'com.google.inject:guice:4.0'
+    compile 'com.google.inject.extensions:guice-assistedinject:4.0'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.3'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
     compile group: 'com.google.guava', name: 'guava', version:'18.0'
