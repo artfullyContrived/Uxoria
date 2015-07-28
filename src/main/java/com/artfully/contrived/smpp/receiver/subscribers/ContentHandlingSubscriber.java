@@ -15,16 +15,15 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
- * Get's called when a new message comes in.
- * This class is responsible for getting the contentURL and hitting it.
- * What do we do with the content we get?
+ * Get's called when a new message comes in. This class is responsible for getting the contentURL
+ * and hitting it. What do we do with the content we get?
  */
 public class ContentHandlingSubscriber {
 
   private static final Logger logger = Logger.getLogger(ContentHandlingSubscriber.class);
 
   private static final ExecutorService service = MoreExecutors
-      .getExitingExecutorService((ThreadPoolExecutor) Executors.newFixedThreadPool(100));
+      .getExitingExecutorService((ThreadPoolExecutor) Executors.newFixedThreadPool(10));
 
   @Subscribe
   public void getContent(MyDeliverSM deliverSm) {

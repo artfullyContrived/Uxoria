@@ -15,13 +15,13 @@ import org.apache.log4j.PropertyConfigurator;
 import org.jsmpp.bean.BindType;
 
 import com.artfully.contrived.smpp.common.RebindParams;
+import com.artfully.contrived.smpp.common.ShutdownHook;
 import com.artfully.contrived.smpp.model.SMPP;
 import com.artfully.contrived.smpp.receiver.module.SessionBinderFactory;
 import com.artfully.contrived.smpp.receiver.subscribers.SessionStateSubscriber;
 import com.artfully.contrived.smpp.sender.workers.MessageQueuePoller;
 import com.artfully.contrived.util.PropertyUtils;
 import com.artfully.contrived.util.Props;
-import com.artfully.contrived.util.ShutdownHook;
 import com.artfully.contrived.util.UxoriaUtils;
 import com.github.rholder.retry.RetryerBuilder;
 import com.google.common.eventbus.EventBus;
@@ -44,10 +44,10 @@ public class MainSender {
    */
   private MainSender() {
 
-    Properties log4jprops = PropertyUtils.getPropertyFile(Props.log4jPropertyFile.getFileName());
+    Properties log4jprops = PropertyUtils.getPropertiesFromFile(Props.log4jPropertyFile.getFileName());
     PropertyConfigurator.configure(log4jprops);
     eventBus = new EventBus();
-    props = PropertyUtils.getPropertyFile(Props.receiverPropertyFile.getFileName());
+    props = PropertyUtils.getPropertiesFromFile(Props.receiverPropertyFile.getFileName());
     
     UxoriaUtils.initialize(props);
   }

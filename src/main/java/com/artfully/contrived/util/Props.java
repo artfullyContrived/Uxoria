@@ -1,16 +1,18 @@
 package com.artfully.contrived.util;
 
 public enum Props {
-    receiverPropertyFile("receiver.properties"),
-    log4jPropertyFile("log4j.properties");
 
-    String fileName;
+  receiverPropertyFile("receiver.properties"),
+  senderPropertyFile("sender.properties"),
+  log4jPropertyFile("log4j.properties");
 
-    Props(String file) {
-	this.fileName = file;
-    }
+  String fileName;
 
-    public String getFileName() {
-	return this.fileName;
-    }
+  Props(String file) {
+    this.fileName = file;
+  }
+
+  public String getFileName() {
+    return this.fileName;
+  }
 }

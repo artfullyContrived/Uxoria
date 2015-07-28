@@ -1,11 +1,12 @@
 /*
  * 
  */
-package com.artfully.contrived.util;
+package com.artfully.contrived.smpp.common;
 
 import java.util.Collection;
 
 import com.artfully.contrived.smpp.model.SMPP;
+import com.artfully.contrived.util.UxoriaUtils;
 
 public class ShutdownHook extends Thread {
 

@@ -78,9 +78,7 @@ public class UxoriaUtils {
     } catch (BadPaddingException e) {
       logger.error(e, e);
     }
-
     return encrypted;
-
   }
 
   /**
@@ -173,7 +171,6 @@ public class UxoriaUtils {
         smpp.setTON(resultSet.getByte("TON"));
         smpp.setTPS(resultSet.getInt("tps"));
         sessions.add(smpp);
-
       }
 
       logger.debug("SESSIONS " + sessions);
@@ -244,12 +241,12 @@ public class UxoriaUtils {
   }
 
   public static void pushToMessageQueue(String message, String recipient, String shortcode) {
-    logger.debug("pushToMessageQueue(). " + message + " " + recipient + " "+ shortcode);
+    logger.debug("pushToMessageQueue(). " + message + " " + recipient + " " + shortcode);
     String sql = "INSERT INTO MessageQueue (id,message, timestamp, recipient,smppid,priority) values(null,?,now(),?,(select id from SMPP where bindType='BIND_TX' and shortcode=? limit 1),?)";
     Connection connection = null;
     try {
       connection = dbUtils.getConnection();
-      PreparedStatement preparedStatement = connection .prepareStatement(sql);
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
       preparedStatement.setString(1, message);
       preparedStatement.setString(2, recipient);
       preparedStatement.setString(3, shortcode);

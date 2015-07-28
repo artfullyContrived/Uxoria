@@ -24,12 +24,12 @@ import com.artfully.contrived.smpp.model.SMPP;
 import com.google.common.eventbus.EventBus;
 
 /**
- * This is a callback for incoming messages. 
- * New Messages are received here then the subscribers informed 
+ * This is a callback for incoming messages.
+ * 
+ * New Messages are received here then the subscribers informed
  */
 public class IncomingMessageListener implements MessageReceiverListener {
 
-  /** The Constant logger. */
   private static final Logger logger = Logger.getLogger(IncomingMessageListener.class);
   private final EventBus eventBus;
   private SMPP smpp;
@@ -43,9 +43,8 @@ public class IncomingMessageListener implements MessageReceiverListener {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.jsmpp.session.GenericMessageReceiverListener#onAcceptDataSm(org.jsmpp
-   * .bean.DataSm, org.jsmpp.session.Session)
+   * @see org.jsmpp.session.GenericMessageReceiverListener#onAcceptDataSm(org.jsmpp .bean.DataSm,
+   * org.jsmpp.session.Session)
    */
   @Override
   public DataSmResult onAcceptDataSm(DataSm dataSM, Session session) throws ProcessRequestException {
@@ -57,8 +56,7 @@ public class IncomingMessageListener implements MessageReceiverListener {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.jsmpp.session.MessageReceiverListener#onAcceptAlertNotification(org
+   * @see org.jsmpp.session.MessageReceiverListener#onAcceptAlertNotification(org
    * .jsmpp.bean.AlertNotification)
    */
   @Override
@@ -71,19 +69,16 @@ public class IncomingMessageListener implements MessageReceiverListener {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.jsmpp.session.MessageReceiverListener#onAcceptDeliverSm(org.jsmpp
-   * .bean.DeliverSm)
+   * @see org.jsmpp.session.MessageReceiverListener#onAcceptDeliverSm(org.jsmpp .bean.DeliverSm)
    */
   @Override
   public void onAcceptDeliverSm(DeliverSm deliverSm)
       throws ProcessRequestException {
-    // Its a delivery report
+    // Is it a delivery report
     if (MessageType.SMSC_DEL_RECEIPT.containedIn(deliverSm.getEsmClass())) {
       try {
         logger.debug(deliverSm.getShortMessageAsDeliveryReceipt());
-        DeliveryReceipt delReceipt = deliverSm
-            .getShortMessageAsDeliveryReceipt();
+        DeliveryReceipt delReceipt = deliverSm.getShortMessageAsDeliveryReceipt();
         logger.debug("delivery report " + delReceipt);
         eventBus.post(deliverSm.getShortMessageAsDeliveryReceipt());
 
@@ -91,11 +86,8 @@ public class IncomingMessageListener implements MessageReceiverListener {
         logger.error(e, e);
       }
     } else {// its a new message
-      logger.debug("new SMS : "
-          + new String(deliverSm.getShortMessage(), Charset
-              .forName("UTF-8")));
+      logger.debug("new SMS : " + new String(deliverSm.getShortMessage(), Charset.forName("UTF-8")));
       eventBus.post(new MyDeliverSM(smpp, deliverSm));
-
     }
   }
 }

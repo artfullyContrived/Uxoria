@@ -62,7 +62,7 @@ public class SMPP implements Serializable {
 
   private boolean isShuttingDown;
 
-  // dont know if its a good idea
+  // not sure if its a good idea
   private transient SMPPSession session;
 
   @Column
@@ -200,8 +200,7 @@ public class SMPP implements Serializable {
   }
 
   /**
-   * @param isShuttingDown
-   *            the isShuttingDown to set
+   * @param isShuttingDown the isShuttingDown to set
    */
   public void setShuttingDown(boolean isShuttingDown) {
     this.isShuttingDown = isShuttingDown;

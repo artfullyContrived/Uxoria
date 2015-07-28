@@ -1,5 +1,6 @@
 package com.artfully.contrived.smpp.receiver;
 
+import com.artfully.contrived.smpp.common.Runner;
 import com.artfully.contrived.smpp.common.SessionBinder;
 import com.artfully.contrived.smpp.receiver.module.ReceiverModule;
 import com.google.inject.Guice;
@@ -11,7 +12,7 @@ public class Main {
 
     Injector injector = Guice.createInjector(new ReceiverModule());
     injector.injectMembers(SessionBinder.class);
-    MainReceiver receiver = injector.getInstance(MainReceiver.class);
+    Runner receiver = injector.getInstance(Runner.class);
 
     receiver.start();
   }

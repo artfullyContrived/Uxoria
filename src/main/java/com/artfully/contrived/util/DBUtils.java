@@ -11,90 +11,94 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 
 public final class DBUtils {
-	private static final Logger logger = Logger.getLogger(DBUtils.class);
+  private static final Logger logger = Logger.getLogger(DBUtils.class);
 
-	private static DBUtils dbutil;
-	private BasicDataSource dataSource;
+  private static DBUtils dbutil;
+  private BasicDataSource dataSource;
 
-	static {
-		try {
-			dbutil = new DBUtils();
-		} catch (Exception e) {
-			logger.debug("Error connecting to db " + e);
-		}
-	}
+  static {
+    try {
+      dbutil = new DBUtils();
+    } catch (Exception e) {
+      logger.debug("Error connecting to db " + e);
+    }
+  }
 
-	// we might externalize more of these
 
-	public DBUtils(String propertiesFile) {
 
-		dataSource = new BasicDataSource();
-		Properties props = new Properties(PropertyUtils.getPropertyFile(propertiesFile));
+  public DBUtils(String propertiesFile) {
 
-		dataSource.setDriverClassName(props.getProperty("JDBCSTRING"));
-		dataSource.setUsername(props.getProperty("username"));
-		dataSource.setPassword(props.getProperty("password"));
-		dataSource.setUrl(props.getProperty("CONNSTRING"));
-		dataSource.setRemoveAbandonedTimeout(30);
-		dataSource.setRemoveAbandoned(true);
-		dataSource.setInitialSize(100);
-		dataSource.setMaxActive(99);
-		dataSource.setMaxIdle(1);
-		dbutil = this;
-	}
+    dataSource = new BasicDataSource();
 
-	public DBUtils(Properties props) {
+    // we might externalize more of these
+    Properties props = new Properties(PropertyUtils.getPropertiesFromFile(propertiesFile));
 
-		dataSource = new BasicDataSource();
+    dataSource.setDriverClassName(props.getProperty("JDBCSTRING"));
+    dataSource.setUsername(props.getProperty("username"));
+    dataSource.setPassword(props.getProperty("password"));
+    dataSource.setUrl(props.getProperty("CONNSTRING"));
+    dataSource.setRemoveAbandonedTimeout(30);
+    dataSource.setRemoveAbandoned(true);
+    dataSource.setInitialSize(100);
+    dataSource.setMaxActive(99);
+    dataSource.setMaxIdle(1);
+  }
 
-		dataSource.setDriverClassName(props.getProperty("JDBCSTRING"));
-		dataSource.setUsername(props.getProperty("username"));
-		dataSource.setPassword(props.getProperty("password"));
-		dataSource.setUrl(props.getProperty("CONNSTRING"));
-		dataSource.setInitialSize(100);
-		dataSource.setMaxActive(99);
-		dataSource.setMaxIdle(10);
-		dbutil = this;
-	}
+  public DBUtils(Properties props) {
 
-	private DBUtils() {
+    dataSource = new BasicDataSource();
 
-	}
+    dataSource.setDriverClassName(props.getProperty("JDBCSTRING"));
+    dataSource.setUsername(props.getProperty("username"));
+    dataSource.setPassword(props.getProperty("password"));
+    dataSource.setUrl(props.getProperty("CONNSTRING"));
+    dataSource.setInitialSize(100);
+    dataSource.setMaxActive(99);
+    dataSource.setMaxIdle(10);
+  }
 
-	/**
-	 * 
-	 * Initializes and returns a database connection to the database
-	 * <p>
-	 * <code></code>
-	 * 
-	 * @throws SQLException
-	 */
-	public synchronized Connection getConnection() throws SQLException {
+  private DBUtils() {
 
-		return dataSource.getConnection();
-	}
+  }
 
-	public static DBUtils getInstance() {
-		return dbutil;
-	}
+  /**
+   * 
+   * Initializes and returns a database connection
+   * <p>
+   * <code></code>
+   * 
+   * @throws SQLException
+   */
+  public synchronized Connection getConnection() throws SQLException {
 
-	public static void closeQuietly(Connection conn) {
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			logger.error(e, e);
-		}
-	}
+    return dataSource.getConnection();
+  }
 
-	public static void closeQuietly(PreparedStatement ps) {
-		try {
-			ps.close();
-		} catch (SQLException e) {
-			// quietly
-		}
-	}
+  public static DBUtils getInstance() {
+    return dbutil;
+  }
 
-	public DataSource getDatasource() {
-		return dataSource;
-	}
+  public static void closeQuietly(Connection conn) {
+    if (conn != null) {
+      try {
+        conn.close();
+      } catch (SQLException e) {
+        // quietly
+      }
+    }
+  }
+
+  public static void closeQuietly(PreparedStatement ps) {
+    if (ps != null) {
+      try {
+        ps.close();
+      } catch (SQLException e) {
+        // quietly
+      }
+    }
+  }
+
+  public DataSource getDatasource() {
+    return dataSource;
+  }
 }

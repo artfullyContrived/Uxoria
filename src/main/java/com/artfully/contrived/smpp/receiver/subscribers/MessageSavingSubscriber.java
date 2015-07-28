@@ -15,16 +15,16 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
- * Called on receipt of a new message. 
- * This class is responsible for persisting the incoming message to DB. 
- * The saveToDb method is called for every incoming message
+ * Called on receipt of a new message. This class is responsible for persisting the incoming message
+ * to DB. The saveToDb method is called for every incoming message
  */
-//TODO refactor. Push the new message to a queue, perhaps in message saver.
+// TODO refactor. Push the new message to a queue, perhaps in message saver.
 public class MessageSavingSubscriber {
 
   private static final Logger logger = Logger.getLogger(MessageSavingSubscriber.class);
-//TODO externalize threadpool count
-  private static final ExecutorService service = MoreExecutors.getExitingExecutorService((ThreadPoolExecutor) Executors.newFixedThreadPool(100));
+  // TODO externalize threadpool count
+  private static final ExecutorService service = MoreExecutors
+      .getExitingExecutorService((ThreadPoolExecutor) Executors.newFixedThreadPool(10));
 
   @Subscribe
   public void saveToDB(MyDeliverSM deliverSm) throws InterruptedException {

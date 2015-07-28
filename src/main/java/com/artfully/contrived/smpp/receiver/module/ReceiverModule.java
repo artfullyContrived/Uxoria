@@ -1,10 +1,10 @@
 package com.artfully.contrived.smpp.receiver.module;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Properties;
 
+import com.artfully.contrived.smpp.common.Runner;
 import com.artfully.contrived.smpp.receiver.MainReceiver;
+import com.artfully.contrived.util.PropertyUtils;
 import com.artfully.contrived.util.Props;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
@@ -17,19 +17,12 @@ public class ReceiverModule extends AbstractModule {
   @Override
   protected void configure() {
 
-    Properties defaults = new Properties();
+    Properties props = new Properties();
+    props = PropertyUtils.getPropertiesFromFile(Props.receiverPropertyFile.getFileName());
 
-    try {
-      Properties props = new Properties(defaults);
-      props.load(new FileInputStream(Props.receiverPropertyFile.getFileName()));
-      bind(Properties.class).toInstance(props);
-      System.out.println("Prps " + props);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    bind(MainReceiver.class);
+    bind(Properties.class).toInstance(props);
     bind(EventBus.class).toInstance(eventBus);
+    bind(Runner.class).to(MainReceiver.class);
 
     install(new FactoryModuleBuilder().build(SessionBinderFactory.class));
 

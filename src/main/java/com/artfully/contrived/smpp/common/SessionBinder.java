@@ -26,6 +26,7 @@ import com.google.inject.assistedinject.Assisted;
 public class SessionBinder implements Callable<SMPP>, SessionStateListener {
 
   private static final Logger logger = Logger.getLogger(SessionBinder.class);
+
   private final Retryer<SMPP> retryer;
   private final EventBus eventBus;
   private SMPP smpp;
@@ -35,7 +36,7 @@ public class SessionBinder implements Callable<SMPP>, SessionStateListener {
     this.smpp = smppBean;
     this.eventBus = eventBus;
     System.out.println("rebind params " + rebindParams);
-    retryer = RetryerBuilder.<SMPP> newBuilder()
+    retryer = RetryerBuilder.<SMPP>newBuilder()
         .withStopStrategy(rebindParams.getStopStrategy())
         .withWaitStrategy(rebindParams.getWaitStrategy())
         .retryIfExceptionOfType(rebindParams.getRetryException())
@@ -47,41 +48,39 @@ public class SessionBinder implements Callable<SMPP>, SessionStateListener {
     SMPPSession session = new SMPPSession();
     String bound = "";
     try {
-      bound = session.connectAndBind(smpp.getSMPPServerIP(), smpp.getSMPPServerPort(), smpp.getBindParameters());
+      bound =
+          session.connectAndBind(smpp.getSMPPServerIP(), smpp.getSMPPServerPort(), smpp.getBindParameters());
     } catch (ConnectException NRE) {//
       logger.error("Could not bind will attempt to rebind.");
-    } catch (IOException exception) {
-      logger.error(exception, exception);
-      throw new ConnectException(exception.getMessage());
+    } catch (IOException e) {
+      logger.error(e, e);
+      throw new ConnectException(e.getMessage());
     }
     if (bound.equals("")) {
       throw new ConnectException("No connection");
     }
     logger.debug("bound--->" + bound);
-    System.err.println("session is null " + session);
     smpp.setSession(session);
     eventBus.post(smpp);
 
     session.setTransactionTimer(5000L);
     session.setMessageReceiverListener(new IncomingMessageListener(eventBus, smpp));
     session.addSessionStateListener(this);
-    //  session.setEnquireLinkTimer(smpp.getEnquireLinkTimer());
+    session.setEnquireLinkTimer(smpp.getEnquireLinkTimer());
 
     return smpp;
   }
 
-  //TODO metric rebind attempts
+  // TODO metric rebind attempts
   @Override
   public void onStateChange(SessionState currentState, SessionState originalState, Object obj) {
     logger
-        .debug("onStateChange(). currentState: " + currentState + " originalState: " + originalState + " obj: " + obj);
+        .debug("onStateChange(). current: " + currentState + " original: " + originalState + " obj: " + obj);
     eventBus.post(smpp);
 
     // retry bind here if its not a deliberate close
-    if (currentState.equals(SessionState.CLOSED)
-        && !this.smpp.isShuttingDown()) {
-      logger.debug("Am supposed to rebind after session closed");
-      // TODO improve rebind
+    if (currentState.equals(SessionState.CLOSED) && !this.smpp.isShuttingDown()) {
+      logger.debug("Rebind required as close was not deliberate.");
       try {
         smpp = this.retryer.call(this);
       } catch (ExecutionException e) {
