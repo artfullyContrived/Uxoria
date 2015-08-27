@@ -30,9 +30,8 @@ public final class DBUtils {
 
     dataSource = new BasicDataSource();
 
-    // we might externalize more of these
     Properties props = new Properties(PropertyUtils.getPropertiesFromFile(propertiesFile));
-
+    // we might externalize more of these
     dataSource.setDriverClassName(props.getProperty("JDBCSTRING"));
     dataSource.setUsername(props.getProperty("username"));
     dataSource.setPassword(props.getProperty("password"));

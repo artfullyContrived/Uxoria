@@ -6,7 +6,7 @@ import com.artfully.contrived.smpp.model.SMPP;
 import com.artfully.contrived.util.UxoriaUtils;
 import com.google.common.eventbus.Subscribe;
 
-//TODO metric number of session state changes
+// TODO metric number of session state changes
 public class SessionStateSubscriber {
 
   private static final Logger logger = Logger.getLogger(SessionStateSubscriber.class);

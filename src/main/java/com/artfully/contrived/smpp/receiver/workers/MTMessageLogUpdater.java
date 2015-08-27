@@ -28,8 +28,7 @@ public class MTMessageLogUpdater implements Runnable {
   /**
    * Instantiates a new persistor.
    * 
-   * @param take
-   *            the take
+   * @param take the take
    */
   public MTMessageLogUpdater(final DeliveryReceipt deliveryReceipt) {
     this.deliverSM = deliveryReceipt;

@@ -16,7 +16,7 @@ import com.google.common.base.Charsets;
 /**
  * Responsible for Saving the messages to the DB.
  */
-//TODO metric number of messages saved
+// TODO metric number of messages saved
 public class MessageSaver implements Runnable {
 
   /** The deliver sm. */
@@ -27,15 +27,15 @@ public class MessageSaver implements Runnable {
   /** The Constant logger. */
   private static final Logger logger = Logger.getLogger(MessageSaver.class);
 
-  private final String query = "INSERT INTO MOMessageLog (`id`,`smppId`,`type`,`message`,`sender`,`requestConfirmation`,`timestamp`,"
-      + "`messageID`,`isCharged`,`shortcode`)"
-      + " values(null,?,?,?,?,?,now(),?,?,?)";
+  private final String query =
+      "INSERT INTO MOMessageLog (`id`,`smppId`,`type`,`message`,`sender`,`requestConfirmation`,`timestamp`,"
+          + "`messageID`,`isCharged`,`shortcode`)"
+          + " values(null,?,?,?,?,?,now(),?,?,?)";
 
   /**
    * Instantiates a new persistor.
    * 
-   * @param take
-   *          the take
+   * @param take the take
    */
   public MessageSaver(final MyDeliverSM deliverSm) {
     this.deliverSM = deliverSm;
@@ -55,7 +55,7 @@ public class MessageSaver implements Runnable {
   // TODO get message length
   public void run() {
 
-    logger.debug("incoming message  " + Thread.currentThread().getName() + " "+ deliverSM);
+    logger.debug("incoming message  " + Thread.currentThread().getName() + " " + deliverSM);
 
     PreparedStatement ps = null;
     try {
@@ -68,7 +68,7 @@ public class MessageSaver implements Runnable {
       ps.setBoolean(5, deliverSM.isSmeDeliveryAckRequested());// `requestConfirmation`
       ps.setInt(6, deliverSM.getSequenceNumber());// `messageID`
       ps.setBoolean(7, false);// `isCharged`
-      ps.setString(8, deliverSM.getDestAddress());// `shortcode` 
+      ps.setString(8, deliverSM.getDestAddress());// `shortcode`
       ps.executeUpdate();
 
     } catch (SQLException e) {

@@ -3,6 +3,19 @@ apply plugin: 'maven'
 apply plugin: 'eclipse'
 apply plugin:'application'
 
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath 'net.ltgt.gradle:gradle-errorprone-plugin:latest.release'
+  }
+}
+
+apply plugin: 'net.ltgt.errorprone'
+
 mainClassName = "com.artfully.contrived.smpp.receiver.Main"
 
 group = 'com.artfully.contrived.smpp'

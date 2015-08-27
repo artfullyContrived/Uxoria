@@ -30,7 +30,7 @@ import com.google.common.util.concurrent.RateLimiter;
 /**
  * SMPPTOSend poller.
  * <p>
- * This class polls the SMPPTosend table every so often for messages for is smppid. It then puts
+ * This class polls the SMPPTosend table every so often for messages for its smppid. It then puts
  * them in a priority queue where consumers pick from for onward sending
  */
 public class MessageQueuePoller implements Runnable {
@@ -43,16 +43,15 @@ public class MessageQueuePoller implements Runnable {
 
   private ExecutorService consumerService;
 
-  public MessageQueuePoller(SMPP smppBean, ExecutorService consumerService) {
-    this.smpp = smppBean;
+  public MessageQueuePoller(SMPP smpp, ExecutorService consumerService) {
+    this.smpp = smpp;
     this.consumerService = consumerService;
     this.limiter = RateLimiter.create(smpp.getTPS());
   }
 
   @Override
   public void run() {
-    logger
-        .debug("polling for SMPP ID:" + smpp.getID() + " shortcode: " + smpp.getShortCode() + " ");
+    logger.debug("polling for SMPP ID:" + smpp.getID() + " shortcode: " + smpp.getShortCode() + " ");
     if (!smpp.getSession().getSessionState().equals(SessionState.BOUND_TX)) {
       logger.debug("Not bound we dont add to queue");
       return;
@@ -68,29 +67,25 @@ public class MessageQueuePoller implements Runnable {
       MessageQueue messageQueue;
       while (resultSet.next()) {
         messageQueue = new MessageQueue(resultSet);
-        message =
-            new ShortMessage.Builder(smpp.getSession())
-                .dataCoding(new GeneralDataCoding(Alphabet.valueOf((byte) smpp.getDataEncoding())))
-                .destAddrNpi(NumberingPlanIndicator.valueOf(smpp.getNPI()))
-                .destAddrTon(TypeOfNumber.valueOf(smpp.getTON()))
-                .destinationAddr(resultSet.getString("recipient"))
-                .priorityFlag(resultSet.getByte("priority"))
-                .optionalParameters(OptionalParameters.newSarTotalSegments(2))
-                .shortMessage(resultSet.getString("message"))
-                .sourceAddr(smpp.getShortCode())
-                .sourceAddrNpi(NumberingPlanIndicator.valueOf(smpp.getNPI()))
-                .sourceAddrTon(TypeOfNumber.valueOf(smpp.getTON()))
-                // TODO get a way to request for a delivery report in
-                // mesagequeue
-                .registeredDelivery(new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE))
-                .scheduleDeliveryTime(TIME_FORMATTER.format(resultSet.getDate("timestamp")))
-                .validityPeriod(TIME_FORMATTER.format(new Date())).build();
+        message = new ShortMessage.Builder(smpp.getSession())
+            .dataCoding(new GeneralDataCoding(Alphabet.valueOf((byte) smpp.getDataEncoding())))
+            .destAddrNpi(NumberingPlanIndicator.valueOf(smpp.getNPI()))
+            .destAddrTon(TypeOfNumber.valueOf(smpp.getTON()))
+            .destinationAddr(resultSet.getString("recipient"))
+            .priorityFlag(resultSet.getByte("priority"))
+            .optionalParameters(OptionalParameters.newSarTotalSegments(2))
+            .shortMessage(resultSet.getString("message"))
+            .sourceAddr(smpp.getShortCode())
+            .sourceAddrNpi(NumberingPlanIndicator.valueOf(smpp.getNPI()))
+            .sourceAddrTon(TypeOfNumber.valueOf(smpp.getTON()))
+            // TODO get a way to request for a delivery report in message queue
+            .registeredDelivery(new RegisteredDelivery(SMSCDeliveryReceipt.SUCCESS_FAILURE))
+            .scheduleDeliveryTime(TIME_FORMATTER.format(resultSet.getDate("timestamp")))
+            .validityPeriod(TIME_FORMATTER.format(new Date())).build();
         logger.debug("Added new message " + message);
         // TODO pass MessageQueue instead of SMPP
         consumerService.submit(new MessageSender(message, messageQueue, limiter));
-
       }
-
     } catch (SQLException e) {
       logger.error(e, e);
     } finally {

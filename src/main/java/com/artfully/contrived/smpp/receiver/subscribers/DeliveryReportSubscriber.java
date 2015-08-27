@@ -37,7 +37,7 @@ public class DeliveryReportSubscriber {
   @Subscribe
   public void updateSMPPReceiver(DeliveryReceipt deliveryReceipt) {
     logger.debug("updateSMPPReceiver(). deliveryReceipt: " + deliveryReceipt);
-    long id = Long.parseLong(deliveryReceipt.getId()) & 0xffffffff;
+    long id = Long.parseLong(deliveryReceipt.getId()) & 0xffffffffL;
     String messageId = Long.toString(id, 16).toUpperCase();
     logger.debug(" " + messageId);
 

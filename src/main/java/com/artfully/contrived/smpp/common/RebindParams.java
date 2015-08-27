@@ -12,7 +12,7 @@ import com.github.rholder.retry.WaitStrategy;
 import com.google.inject.Inject;
 
 public class RebindParams {
-  
+
   private final StopStrategy stopStrategy;
   private final WaitStrategy waitStrategy;;
   private final Class<? extends Exception> retryException;
@@ -21,7 +21,8 @@ public class RebindParams {
   public RebindParams(Properties props) {
 
     this.stopStrategy = stopAfterAttempt(Integer.parseInt(props.getProperty("retry.attempts")));
-    this.waitStrategy = incrementingWait(5, SECONDS, Integer.parseInt(props.getProperty("retry.waits")), SECONDS);
+    this.waitStrategy =
+        incrementingWait(5, SECONDS, Integer.parseInt(props.getProperty("retry.waits")), SECONDS);
     this.retryException = ConnectException.class;
   }
 

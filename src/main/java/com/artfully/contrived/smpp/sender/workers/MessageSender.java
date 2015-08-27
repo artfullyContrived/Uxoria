@@ -14,7 +14,7 @@ import com.artfully.contrived.smpp.model.ShortMessage;
 import com.artfully.contrived.util.DBUtils;
 import com.google.common.util.concurrent.RateLimiter;
 
-//TODO remove from message queue if succesfully sent
+// TODO remove from message queue if succesfully sent
 // TODO handle resp 88 and resp 20
 public class MessageSender implements Callable<String> {
 
@@ -23,16 +23,19 @@ public class MessageSender implements Callable<String> {
   private ShortMessage message;
   private final RateLimiter rateLimiter;
   private final Connection conn;
-  private final String returnToQueue = "Insert into MessageQueue (id, message, timestamp, recipient, smppid, priority ) "
-      + "values (null,?,?,?,?,?)";
+  private final String returnToQueue =
+      "Insert into MessageQueue (id, message, timestamp, recipient, smppid, priority ) "
+          + "values (null,?,?,?,?,?)";
   private final String removeFromQueue = "Delete from MessageQueue where id=?";
 
-  private String moveToLog = "INSERT INTO MTMessageLog (id, smppid, message, recipient, requestConfirmation, timestamp,shortcode ) "
-      + "values(null,?,?,?,?,?,?)";
+  private String moveToLog =
+      "INSERT INTO MTMessageLog (id, smppid, message, recipient, requestConfirmation, timestamp,shortcode ) "
+          + "values(null,?,?,?,?,?,?)";
 
   private MessageQueue messageQueue;
 
-  public MessageSender(ShortMessage message, MessageQueue messageQueue, RateLimiter rateLimiter) throws SQLException {
+  public MessageSender(ShortMessage message, MessageQueue messageQueue, RateLimiter rateLimiter)
+      throws SQLException {
     this.message = message;
     this.messageQueue = messageQueue;
     this.rateLimiter = rateLimiter;
@@ -66,10 +69,10 @@ public class MessageSender implements Callable<String> {
       statement.setInt(1, messageQueue.getSmppId());
       statement.setString(2, message.getShortMessage());
       statement.setString(3, message.getDestinationAddr());
-      statement.setInt(4, 1);//request confirmation
+      statement.setInt(4, 1);// always request confirmation
       statement.setDate(5, new Date(System.currentTimeMillis()));
       statement.setString(6, message.getSourceAddr());
-     
+
       statement.execute();
 
       // delete from queue
@@ -85,11 +88,10 @@ public class MessageSender implements Callable<String> {
       PreparedStatement statement = conn.prepareStatement(returnToQueue);
       statement.setString(1, message.getShortMessage());
       statement.setString(2, message.getScheduleDeliveryTime());
-      statement.setInt(3, 2);// TODO
+      statement.setInt(3, 2);// TODO ?????
       statement.setInt(4, message.getPriorityFlag());
       statement.execute();
       conn.close();
-
       x = null;
     }
     return x;

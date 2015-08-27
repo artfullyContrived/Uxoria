@@ -41,7 +41,7 @@ public class HTTPContentHandler implements ContentHandler, Runnable {
 
       if (!tailText.isEmpty())
         buffer.append(' ');
-        buffer.append(tailText);
+      buffer.append(tailText);
     } else {
       logger.debug("Unknown keyword");
       buffer.append("invalid keyword");
@@ -53,7 +53,7 @@ public class HTTPContentHandler implements ContentHandler, Runnable {
     return UxoriaUtils.getContentItem(deliverSm);
   }
 
-  //TODO investigate best, fastest, cheapest way hitting contentURL
+  // TODO investigate best, fastest, cheapest way hitting contentURL
   private String getContent(String contentURL) {
     logger.debug("Getting Content for: " + contentURL);
     String content = "";

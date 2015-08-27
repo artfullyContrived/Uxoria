@@ -35,9 +35,9 @@ import com.google.common.eventbus.EventBus;
 // TODO take care of CharEncoding everywhere
 // TODO add RateLimiter in case we are flooded.
 // TODO add metrics
-public class MainReceiver extends Runner {
+public class ReceiverRunner extends Runner {
 
-  private static final Logger logger = Logger.getLogger(MainReceiver.class);
+  private static final Logger logger = Logger.getLogger(ReceiverRunner.class);
 
   private SessionBinderFactory sessionBinderFactory;
   private RebindParams rebindParams;
@@ -46,7 +46,7 @@ public class MainReceiver extends Runner {
 
 
   @Inject
-  public MainReceiver(Properties props, EventBus eventBus, RebindParams rebindParams,
+  public ReceiverRunner(Properties props, EventBus eventBus, RebindParams rebindParams,
       SessionBinderFactory sessionBinderFactory) {
     initializeLogger();
 

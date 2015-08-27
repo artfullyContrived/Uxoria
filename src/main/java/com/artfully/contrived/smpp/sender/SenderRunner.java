@@ -15,6 +15,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.jsmpp.bean.BindType;
 
 import com.artfully.contrived.smpp.common.RebindParams;
+import com.artfully.contrived.smpp.common.Runner;
 import com.artfully.contrived.smpp.common.ShutdownHook;
 import com.artfully.contrived.smpp.model.SMPP;
 import com.artfully.contrived.smpp.receiver.module.SessionBinderFactory;
@@ -26,34 +27,34 @@ import com.artfully.contrived.util.UxoriaUtils;
 import com.github.rholder.retry.RetryerBuilder;
 import com.google.common.eventbus.EventBus;
 
-public class MainSender {
+public class SenderRunner extends Runner {
 
   /** The props. */
   private final Properties props;
 
   /** The Constant logger. */
-  private static final Logger logger = Logger.getLogger(MainSender.class);
+  private static final Logger logger = Logger.getLogger(SenderRunner.class);
 
   /** The Constant eventBus. */
   private static EventBus eventBus;
-  
+
   private static SessionBinderFactory sessionBinderFactory;
 
   /**
    * Instantiates a new receiver.
    */
-  private MainSender() {
+  private SenderRunner() {
 
     Properties log4jprops = PropertyUtils.getPropertiesFromFile(Props.log4jPropertyFile.getFileName());
     PropertyConfigurator.configure(log4jprops);
     eventBus = new EventBus();
     props = PropertyUtils.getPropertiesFromFile(Props.receiverPropertyFile.getFileName());
-    
+
     UxoriaUtils.initialize(props);
   }
 
   public static void main(String[] args) {
-    MainSender sender = new MainSender();
+    SenderRunner sender = new SenderRunner();
     Collection<SMPP> smppBeans = sender.getTxSessions();
 
     ExecutorService bindExecutor = Executors.newCachedThreadPool();
@@ -71,7 +72,7 @@ public class MainSender {
       Future<SMPP> future = null;
       for (SMPP smppBean : smppBeans) {
         future = bindExecutor.submit(RetryerBuilder
-            .<SMPP> newBuilder()
+            .<SMPP>newBuilder()
             .withStopStrategy(rebindParams.getStopStrategy())
             .withWaitStrategy(rebindParams.getWaitStrategy())
             .retryIfExceptionOfType(rebindParams.getRetryException())
@@ -85,7 +86,8 @@ public class MainSender {
       for (Future<SMPP> session : futures) {
         smpp = session.get();
 
-        producerService.scheduleWithFixedDelay(new MessageQueuePoller(smpp, consumerService), 0, 10, TimeUnit.SECONDS);
+        producerService.scheduleWithFixedDelay(new MessageQueuePoller(smpp, consumerService), 0, 10,
+            TimeUnit.SECONDS);
 
       }
     } catch (InterruptedException e) {
@@ -101,5 +103,11 @@ public class MainSender {
   private Collection<SMPP> getTxSessions() {
     logger.debug("getTxSessions().");
     return UxoriaUtils.getSessions(BindType.BIND_TX);
+  }
+
+  @Override
+  public void start() {
+    // TODO Auto-generated method stub
+
   }
 }

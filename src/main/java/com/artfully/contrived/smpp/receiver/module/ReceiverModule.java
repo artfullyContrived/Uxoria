@@ -3,7 +3,7 @@ package com.artfully.contrived.smpp.receiver.module;
 import java.util.Properties;
 
 import com.artfully.contrived.smpp.common.Runner;
-import com.artfully.contrived.smpp.receiver.MainReceiver;
+import com.artfully.contrived.smpp.receiver.ReceiverRunner;
 import com.artfully.contrived.util.PropertyUtils;
 import com.artfully.contrived.util.Props;
 import com.google.common.eventbus.EventBus;
@@ -22,7 +22,7 @@ public class ReceiverModule extends AbstractModule {
 
     bind(Properties.class).toInstance(props);
     bind(EventBus.class).toInstance(eventBus);
-    bind(Runner.class).to(MainReceiver.class);
+    bind(Runner.class).to(ReceiverRunner.class);
 
     install(new FactoryModuleBuilder().build(SessionBinderFactory.class));
 

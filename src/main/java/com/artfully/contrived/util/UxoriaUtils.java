@@ -55,8 +55,7 @@ public class UxoriaUtils {
   /**
    * AES encrypt.
    * 
-   * @param decrypted
-   *            the decrypted
+   * @param decrypted the decrypted
    * @return the byte[]
    */
   public static byte[] AESEncrypt(String decrypted) {
@@ -84,8 +83,7 @@ public class UxoriaUtils {
   /**
    * AES decrypt.
    * 
-   * @param encrypted
-   *            the encrypted
+   * @param encrypted the encrypted
    * @return the byte[]
    */
   public static byte[] AESDecrypt(byte[] encrypted) {
@@ -209,7 +207,8 @@ public class UxoriaUtils {
 
   public static ContentItem getContentItem(MyDeliverSM deliverSm2) {
     logger.debug("getContentElement(). deliverSm: " + new String(deliverSm2.getShortMessage()));
-    String query = "select c.Id, headText, contentURL, tailText, keyWord, `key`, `value` from ContentItem c  join ContentItemParams p on c.id=p.contentItemID where shortcode=? and (keyword=? or keyword='default')order by if(keyword='default',1,0) ";
+    String query =
+        "select c.Id, headText, contentURL, tailText, keyWord, `key`, `value` from ContentItem c  join ContentItemParams p on c.id=p.contentItemID where shortcode=? and (keyword=? or keyword='default')order by if(keyword='default',1,0) ";
     ContentItem contentItem = null;
     String message = new String(deliverSm2.getShortMessage(),
         Charset.forName("UTF-8"));
@@ -242,7 +241,8 @@ public class UxoriaUtils {
 
   public static void pushToMessageQueue(String message, String recipient, String shortcode) {
     logger.debug("pushToMessageQueue(). " + message + " " + recipient + " " + shortcode);
-    String sql = "INSERT INTO MessageQueue (id,message, timestamp, recipient,smppid,priority) values(null,?,now(),?,(select id from SMPP where bindType='BIND_TX' and shortcode=? limit 1),?)";
+    String sql =
+        "INSERT INTO MessageQueue (id,message, timestamp, recipient,smppid,priority) values(null,?,now(),?,(select id from SMPP where bindType='BIND_TX' and shortcode=? limit 1),?)";
     Connection connection = null;
     try {
       connection = dbUtils.getConnection();
