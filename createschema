@@ -1,6 +1,7 @@
 TODO 
 	1. change bindtype to enum
 	2. change status to enum.
+http://stackoverflow.com/questions/59667/why-would-i-ever-pick-char-over-varchar-in-sql
 
 CREATE DATABASE `uxoria` CHARACTER SET utf8 COLLATE utf8_general_ci;
 GRANT ALL ON `uxoria`.* TO `root`@localhost IDENTIFIED BY '';
